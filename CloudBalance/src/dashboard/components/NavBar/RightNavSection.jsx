@@ -1,6 +1,14 @@
 import { CgProfile } from "react-icons/cg";
 import { BiLogOut } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 function RightNavSection() {
+
+  const navigate = useNavigate();
+  const handleLogOut = () => {
+  localStorage.setItem("auth", "false");
+  navigate("/");
+};
+
   return (
     <div>
       <div className="flex items-center space-x-8">
@@ -14,7 +22,7 @@ function RightNavSection() {
           </div>
         </div>
 
-        <button className="flex items-center px-3 py-1.5 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 text-sm">
+        <button onClick={handleLogOut} className="flex items-center p-2 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 text-sm">
           <BiLogOut className="w-4 h-4 mr-1" />
           Logout
         </button>
