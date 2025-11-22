@@ -6,11 +6,13 @@ import ProtectedRoute from "./ProtectedRout";
 import AwsServices from "../dashboard/components/SideMenuBar/AwsServices";
 import OnBoarding from "../dashboard/components/SideMenuBar/OnBoarding";
 import UserManagement from "../dashboard/components/SideMenuBar/UserManagement";
+import AddUser from "../dashboard/users/AddUser";
 
 function Routing() {
   return (
     <Routes>
       <Route path="/" element={<LogInPage />} />
+
       <Route
         path="dashboard"
         element={
@@ -20,8 +22,9 @@ function Routing() {
         }
       >
         <Route path="users" element={<UserManagement />} />
+        <Route path="users/add" element={<AddUser />} />
         <Route path="costexplorer" element={<CostExplorer />} />
-        <Route path="onboarding" element={<OnBoarding/>} />
+        <Route path="onboarding" element={<OnBoarding />} />
         <Route path="awsservices" element={<AwsServices />} />
       </Route>
     </Routes>
