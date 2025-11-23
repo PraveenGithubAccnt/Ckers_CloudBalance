@@ -1,8 +1,10 @@
 import { NavLink } from "react-router-dom";
 import { FaUserFriends, FaRocket, FaChartArea, FaAws } from "react-icons/fa";
-
-function SideMenuSlider({ open }) {
-  const navItems = [
+import { useContext } from "react";
+import { SideBarOpentShut } from "../../ContextHolder";
+function SideMenuSlider() {
+    const {open}=useContext(SideBarOpentShut); 
+  const SideBarItems = [
     {
       to: "/dashboard/users",
       label: "User Management",
@@ -31,7 +33,7 @@ function SideMenuSlider({ open }) {
       ${open ? "w-64" : "w-20"}`}
     >
       <ul className="p-4 space-y-6">
-        {navItems.map((item) => (
+        {SideBarItems.map((item) => (
           <li key={item.to}>
             <NavLink
               to={item.to}
