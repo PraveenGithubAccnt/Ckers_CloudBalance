@@ -67,7 +67,7 @@ function LogInPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700 transition duration-150 ease-in-out font-semibold"
+              className="w-full bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700 transition duration-150 ease-in-out font-semibold cursor-pointer"
             >
               LOGIN
             </button>

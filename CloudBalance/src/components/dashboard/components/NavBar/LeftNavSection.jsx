@@ -1,9 +1,11 @@
 
 import { IoMenu } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import cloudbalance from "../../../assets/cloudbalance.png";
-function LeftNavSection({ open, setOpen }) {
-
+import cloudbalance from "../../../../assets/cloudbalance.png";
+import { useContext } from "react";
+import { SideBarOpentShut } from "../../ContextHolder";
+function LeftNavSection() {
+    const {open,setOpen}=useContext(SideBarOpentShut); 
   return (
     <div>
       <div className="flex items-center space-x-8">

@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import LogInPage from './LogInPage';
-import DashBoard from '../dashboard/DashBoard';
-import CostExplorer from '../dashboard/components/SideMenuBar/CostExplorer';
+import DashBoard from '../components/dashboard/DashBoard'
+import CostExplorer from '../components/dashboard/components/SideMenuBar/CostExplorer';
 import ProtectedRoute from "./ProtectedRout";
-import AwsServices from "../dashboard/components/SideMenuBar/AwsServices";
-import OnBoarding from "../dashboard/components/SideMenuBar/OnBoarding";
-import UserManagement from "../dashboard/components/SideMenuBar/UserManagement";
-import AddUser from "../dashboard/users/AddUser";
+import AwsServices from "../components/dashboard/components/SideMenuBar/AwsServices";
+import OnBoarding from "../components/dashboard/components/SideMenuBar/OnBoarding";
+import UserManagement from "../components/dashboard/components/SideMenuBar/UserManagement";
+import AddUser from "../components/users/components/AddUser";
 
 function Routing() {
   return (

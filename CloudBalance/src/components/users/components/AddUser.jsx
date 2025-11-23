@@ -83,7 +83,7 @@ function AddUser() {
         </form>
         <div className="flex ml-130">
           <button 
-          className="flex gap-2 items-center bg-blue-500 hover:bg-blue-700 text-white text-base rounded-md p-2"
+          className="flex gap-2 items-center bg-blue-500 hover:bg-blue-700 text-white text-base rounded-md p-2 cursor-pointer"
           title="Submit Details" 
           >
             <BsFillSendArrowUpFill size={20} />

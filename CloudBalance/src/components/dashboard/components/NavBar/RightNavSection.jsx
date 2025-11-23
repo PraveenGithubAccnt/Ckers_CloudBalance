@@ -22,7 +22,7 @@ function RightNavSection() {
           </div>
         </div>
 
-        <button onClick={handleLogOut} className="flex items-center p-2 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 text-sm">
+        <button onClick={handleLogOut} className="flex items-center p-2 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 text-sm cursor-pointer">
           <BiLogOut className="w-4 h-4 mr-1" />
           Logout
         </button>
