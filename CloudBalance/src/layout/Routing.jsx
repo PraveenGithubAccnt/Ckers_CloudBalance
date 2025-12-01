@@ -6,7 +6,8 @@ import ProtectedRoute from "./ProtectedRout";
 import AwsServices from "../components/dashboard/components/SideMenuBar/AwsServices";
 import OnBoarding from "../components/dashboard/components/SideMenuBar/OnBoarding";
 import UserManagement from "../components/dashboard/components/SideMenuBar/UserManagement";
-import AddUser from "../components/users/components/AddUser";
+import AddUser from "../components/dashboard/components/users/components/AddUser";
+import NotFount from "./NotFount";
 
 function Routing() {
   return (
@@ -27,6 +28,7 @@ function Routing() {
         <Route path="onboarding" element={<OnBoarding />} />
         <Route path="awsservices" element={<AwsServices />} />
       </Route>
+      <Route path="*" element={<NotFount/>} />
     </Routes>
   );
 }

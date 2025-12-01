@@ -2,24 +2,50 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ActionButtons from "./ActionButtons";
 import { CgSearchLoading } from "react-icons/cg";
+import { useNavigate } from "react-router-dom";
+
 function UserDetailTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("https://692030d331e684d7bfcc0967.mockapi.io/Users")
-      .then((response) => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "https://692030d331e684d7bfcc0967.mockapi.io/Users"
+        );
         setUsers(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching users:", error);
         setError(error.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchUsers();
   }, []);
+
+  const handleEdit = (user) => {
+    navigate("/dashboard/users/add", { state: { user, isEdit: true } });
+  };
+
+  const handleDelete = async (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await axios.delete(
+          `https://692030d331e684d7bfcc0967.mockapi.io/Users/${userId}`
+        );
+        setUsers(users.filter((user) => user.id !== userId));
+      } 
+      catch (error) {
+        console.error("Error deleting user:", error);
+        alert("Failed to delete user");
+      }
+    }
+  };
 
   if (loading)
     return (
@@ -48,6 +74,9 @@ function UserDetailTable() {
                 <th className="p-3 text-left border-b border-gray-200">
                   Last Name
                 </th>
+                <th className="p-3 text-left border-b border-gray-200">
+                  Email ID
+                </th>
                 <th className="p-3 text-left border-b border-gray-200">Role</th>
                 <th className="p-3 text-left border-b border-gray-200">
                   Last Login
@@ -66,18 +95,34 @@ function UserDetailTable() {
                   }`}
                 >
                   <td className="p-3 border-b border-gray-100">{user.id}</td>
-                  <td className="p-3 border-b border-gray-100">{user.FirstName}</td>
-                  <td className="p-3 border-b border-gray-100">{user.LastName}</td>
                   <td className="p-3 border-b border-gray-100">
-                    <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                      {user.Roles}
-                    </span></td>
-                  
+                    {user.FirstName}
+                  </td>
                   <td className="p-3 border-b border-gray-100">
-                    {user.LastLogins}</td>
-                  
+                    {user.LastName}
+                  </td>
+                  <td className="p-3 border-b border-gray-100">{user.Email}</td>
                   <td className="p-3 border-b border-gray-100">
-                    <ActionButtons /></td>
+                    <div className="flex gap-2 flex-wrap">
+                      {user.Roles.map((role, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"
+                        >
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="p-3 border-b border-gray-100">
+                    {user.LastLogins}
+                  </td>
+                  <td className="p-3 border-b border-gray-100">
+                    <ActionButtons
+                      onEdit={() => handleEdit(user)}
+                      onDelete={() => handleDelete(user.id)}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>

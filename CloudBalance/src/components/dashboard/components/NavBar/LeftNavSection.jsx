@@ -14,7 +14,7 @@ function LeftNavSection() {
         </button>
 
         <div className="shrink-0">
-          <img src={cloudbalance} alt="CloudKeeper" className="h-20 w-auto" />
+          <img src={cloudbalance} alt="CloudBalance" className="h-20 w-auto" />
         </div>
 
         <div className="flex items-center space-x-8">

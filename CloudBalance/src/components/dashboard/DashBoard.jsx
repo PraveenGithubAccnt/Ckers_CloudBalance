@@ -14,7 +14,6 @@ function DashBoard() {
 
         <div className="flex flex-1 overflow-hidden">
           <SideMenuSlider />
-
           <main className="flex-1 p-3 overflow-hidden transition-all duration-300 bg-gray-200">
             <Outlet />
           </main>

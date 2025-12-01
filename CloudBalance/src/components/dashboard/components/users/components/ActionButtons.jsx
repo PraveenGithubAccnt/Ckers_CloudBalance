@@ -15,7 +15,7 @@ function ActionButtons({ onEdit, onDelete }) {
     <div className="flex gap-5 items-center">
       <button
         onClick={handleToggle}
-        className={`text-xl transition-colors ${
+        className={`text-xl transition-colors cursor-pointer ${
           isEnabled
             ? "text-blue-500 hover:text-blue-600"
             : "text-gray-400 hover:text-gray-500"
@@ -26,14 +26,14 @@ function ActionButtons({ onEdit, onDelete }) {
 
       <button
         onClick={onEdit}
-        className="text-green-600 hover:text-green-700 transition-colors"
+        className="text-green-600 hover:text-green-700 transition-colors cursor-pointer"
         title="Edit User">
         <FaEdit />
       </button>
 
       <button
         onClick={onDelete}
-        className="text-red-500 hover:text-red-600 transition-colors"
+        className="text-red-500 hover:text-red-600 transition-colors cursor-pointer"
         title="Delete User"
       >
         <RiDeleteBin5Line />
