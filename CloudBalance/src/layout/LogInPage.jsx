@@ -1,18 +1,36 @@
+import { useEffect, useState } from "react";
 import cloudbalance from "../assets/cloudbalance.png";
 import { Link, useNavigate } from "react-router-dom";
 
 function LogInPage() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
-    localStorage.setItem("auth", "true");
-    navigate("/dashboard/users");
+    
+
+    const userData = { email, password };
+    localStorage.setItem("userData", JSON.stringify(userData));
+    
+    const storedData = JSON.parse(localStorage.getItem("userData"));
+    
+    if (email === storedData.email && password === storedData.password) {
+      localStorage.setItem("auth", "true");
+      navigate("/dashboard/users", { replace: true });
+    }
   };
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("auth");
+    if (isLoggedIn === "true") {
+      navigate("/dashboard/users", { replace: true });
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">
-   
       <div className="grow flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-6">
@@ -22,7 +40,6 @@ function LogInPage() {
               className="w-50 h-auto mx-auto"
             />
           </div>
-
           <form onSubmit={handleLogin}>
             <div className="mb-4">
               <label
@@ -31,15 +48,16 @@ function LogInPage() {
               >
                 Email
               </label>
-
               <input
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
                 id="emailfld"
                 placeholder="Enter your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
-
             <div className="mb-6">
               <label
                 htmlFor="passwordfld"
@@ -47,15 +65,16 @@ function LogInPage() {
               >
                 Password
               </label>
-
               <input
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="password"
                 id="passwordfld"
                 placeholder="Enter your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
-
             <div className="text-right mb-4">
               <Link
                 to="/forgot-password"
@@ -64,7 +83,6 @@ function LogInPage() {
                 Forgot Password?
               </Link>
             </div>
-
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700 transition duration-150 ease-in-out font-semibold cursor-pointer"
@@ -74,7 +92,6 @@ function LogInPage() {
           </form>
         </div>
       </div>
-
       <footer className="py-3 px-6 text-sm text-gray-600 border-t border-gray-300 bg-gray-100 w-full flex justify-between items-center">
         <p>
           Have a Question?{" "}
@@ -82,7 +99,6 @@ function LogInPage() {
             Talk to Our Team
           </span>
         </p>
-
         <p>© Cloudnomic 2025 | All Rights Reserved</p>
       </footer>
     </div>

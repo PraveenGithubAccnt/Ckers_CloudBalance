@@ -1,6 +1,3 @@
 import { createContext } from "react";
 
-export const SideBarOpentShut = createContext({
-  open: false,
-  setOpen: () => {}
-});
+export const SideBarOpentShut = createContext();

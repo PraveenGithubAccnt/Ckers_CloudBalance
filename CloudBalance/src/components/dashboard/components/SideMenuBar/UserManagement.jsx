@@ -1,11 +1,11 @@
-import UserDetailTable from "../../../users/components/UserDetailTable";
+import UserDetailTable from "../users/components/UserDetailTable";
 import { IoMdPersonAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 function UserManagement() {
   const navigate = useNavigate();
 
   function navigateToForm() {
-    navigate("/dashboard/users/add");
+    navigate("/dashboard/users/add", );
   }
 
   return (
