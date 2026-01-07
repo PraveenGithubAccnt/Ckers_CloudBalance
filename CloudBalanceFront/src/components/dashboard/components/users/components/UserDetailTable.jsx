@@ -9,6 +9,8 @@ function UserDetailTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
 
   const handleEdit = (user) => {
@@ -31,15 +33,25 @@ function UserDetailTable() {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await deleteUser(userId);
-        setUsers((prev) => prev.filter((user) => user.id !== userId));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        alert("Failed to delete user");
-      }
+
+   const handleDelete = (userId) => {
+    setSelectedUserId(userId);
+    setShowConfirm(true);
+  };
+
+  
+  const confirmDelete = async () => {
+    try {
+      await deleteUser(selectedUserId);
+      setUsers((prev) =>
+        prev.filter((user) => user.id !== selectedUserId)
+      );
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert("Failed to delete user");
+    } finally {
+      setShowConfirm(false);
+      setSelectedUserId(null);
     }
   };
 
@@ -73,9 +85,7 @@ function UserDetailTable() {
                   Email ID
                 </th>
                 <th className="p-3 text-left border-b border-gray-200">Role</th>
-                <th className="p-3 text-left border-b border-gray-200">
-                  Last Login
-                </th>
+
                 <th className="p-3 text-left border-b border-gray-200">
                   Actions
                 </th>
@@ -105,9 +115,6 @@ function UserDetailTable() {
                     </div>
                   </td>
                   <td className="p-3 border-b border-gray-100">
-                    {user.lastLogins}
-                  </td>
-                  <td className="p-3 border-b border-gray-100">
                     <ActionButtons
                       onEdit={() => handleEdit(user)}
                       onDelete={() => handleDelete(user.id)}
@@ -120,6 +127,33 @@ function UserDetailTable() {
         </div>
       </div>
       <div className="mt-50 "></div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">
+              Confirm Delete
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete this user?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 border rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

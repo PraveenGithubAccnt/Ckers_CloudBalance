@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UserDetailTable from "../users/components/UserDetailTable";
+import UserDetailTable from "../../users/components/UserDetailTable";
 import { IoMdPersonAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 

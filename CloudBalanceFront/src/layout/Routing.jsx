@@ -1,15 +1,34 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import LogInPage from './LogInPage';
-import DashBoard from '../components/dashboard/DashBoard'
-import CostExplorer from '../components/dashboard/components/SideMenuBar/CostExplorer';
+import DashBoard from '../components/dashboard/DashBoard';
+import CostExplorer from '../components/dashboard/components/SideMenuBar/components/CostExplorer';
 import ProtectedRoute from "./ProtectedRout";
-import AwsServices from "../components/dashboard/components/SideMenuBar/AwsServices";
-import OnBoarding from "../components/dashboard/components/SideMenuBar/OnBoarding";
-import UserManagement from "../components/dashboard/components/SideMenuBar/UserManagement";
+import AwsServices from "../components/dashboard/components/SideMenuBar/components/AwsServices";
+import OnBoarding from "../components/dashboard/components/SideMenuBar/components/OnBoarding";
+import UserManagement from "../components/dashboard/components/SideMenuBar/components/UserManagement";
 import AddUser from "../components/dashboard/components/users/components/AddUser";
 import NotFount from "./NotFount";
 
 function Routing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "logout") {
+        // Clear localStorage and navigate to login
+        localStorage.clear();
+        navigate("/", { replace: true }); 
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [navigate]);
+
   return (
     <Routes>
       <Route path="/" element={<LogInPage />} />
@@ -28,7 +47,8 @@ function Routing() {
         <Route path="onboarding" element={<OnBoarding />} />
         <Route path="awsservices" element={<AwsServices />} />
       </Route>
-      <Route path="*" element={<NotFount/>} />
+
+      <Route path="*" element={<NotFount />} />
     </Routes>
   );
 }

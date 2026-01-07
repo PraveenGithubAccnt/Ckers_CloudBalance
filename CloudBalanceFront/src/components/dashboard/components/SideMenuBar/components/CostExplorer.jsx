@@ -1,6 +1,6 @@
-import CostExplorerHeading from "../costExplore/components/CostExplorerHeading";
-import ChartSection from "../costExplore/components/ChartSection";
-import AwsServiceTable from "../costExplore/components/AwsServiceTable";
+import CostExplorerHeading from "../../costExplore/components/CostExplorerHeading";
+import ChartSection from "../../costExplore/components/ChartSection";
+import AwsServiceTable from "../../costExplore/components/AwsServiceTable";
 
 function CostExplorer() {
   return (

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { FaUserFriends, FaRocket, FaChartArea, FaAws } from "react-icons/fa";
 import { useContext } from "react";
-import { SideBarOpentShut } from "../../ContextHolder";
+import { SideBarOpentShut } from "../../../ContextHolder";
 function SideMenuSlider() {
     const {open}=useContext(SideBarOpentShut); 
   const SideBarItems = [

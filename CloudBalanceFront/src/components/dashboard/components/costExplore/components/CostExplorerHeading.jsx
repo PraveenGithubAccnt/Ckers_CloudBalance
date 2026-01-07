@@ -11,7 +11,7 @@ function CostExplorerHeading() {
         
       
         <NavLink
-          to="/"
+          to="/dashboard/users"
           end
           className={({ isActive }) =>
             `text-lg ${

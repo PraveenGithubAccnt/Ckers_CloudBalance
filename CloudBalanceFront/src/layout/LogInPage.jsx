@@ -1,33 +1,50 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import cloudbalance from "../assets/cloudbalance.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 
 function LogInPage() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [err, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
+    setError("");
+    setLoading(true);
 
-    const userData = { email, password };
-    localStorage.setItem("userData", JSON.stringify(userData));
-    
-    const storedData = JSON.parse(localStorage.getItem("userData"));
-    
-    if (email === storedData.email && password === storedData.password) {
-      localStorage.setItem("auth", "true");
-      navigate("/dashboard/users", { replace: true });
+    try {
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("firstName", response.data.firstName);
+        localStorage.setItem("lastName", response.data.lastName);
+        localStorage.setItem("expiresAt", Date.now() + response.data.expiresIn * 1000);
+
+        navigate("/dashboard/users", { replace: true });
+      } else {
+        setError("Login failed. No token received.");
+      }
+    } catch (error) {
+      if (error.response) {
+        setError("Invalid email or password");
+      } else if (error.request) {
+        setError("Cannot connect to server. Please try again.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("auth");
-    if (isLoggedIn === "true") {
-      navigate("/dashboard/users", { replace: true });
-    }
-  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -37,9 +54,10 @@ function LogInPage() {
             <img
               src={cloudbalance}
               alt="CloudBalanceIMG"
-              className="w-50 h-auto mx-auto"
+              className="w-48 h-auto mx-auto"
             />
           </div>
+
           <form onSubmit={handleLogin}>
             <div className="mb-4">
               <label
@@ -49,15 +67,17 @@ function LogInPage() {
                 Email
               </label>
               <input
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
                 id="emailfld"
                 placeholder="Enter your Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
+
             <div className="mb-6">
               <label
                 htmlFor="passwordfld"
@@ -66,33 +86,37 @@ function LogInPage() {
                 Password
               </label>
               <input
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="password"
                 id="passwordfld"
                 placeholder="Enter your Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
                 required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
-            <div className="text-right mb-4">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out font-medium"
-              >
-                Forgot Password?
-              </Link>
-            </div>
+
+            {err && (
+              <p className="text-red-600 text-sm mb-3 text-center">{err}</p>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700 transition duration-150 ease-in-out font-semibold cursor-pointer"
+              disabled={loading}
+              className={`w-full py-2 rounded-sm font-semibold transition ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed text-gray-700"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
             >
-              LOGIN
+              {loading ? "Logging in..." : "LOGIN"}
             </button>
           </form>
         </div>
       </div>
-      <footer className="py-3 px-6 text-sm text-gray-600 border-t border-gray-300 bg-gray-100 w-full flex justify-between items-center">
+
+      <footer className="py-3 px-6 text-sm text-gray-600 border-t bg-gray-100 flex justify-between">
         <p>
           Have a Question?{" "}
           <span className="text-blue-600 font-medium cursor-pointer hover:underline">
