@@ -1,9 +1,9 @@
 
 import { IoMenu } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import cloudbalance from "../../../../assets/cloudbalance.png";
+import cloudbalance from "../../../../../assets/cloudbalance.png";
 import { useContext } from "react";
-import { SideBarOpentShut } from "../../ContextHolder";
+import { SideBarOpentShut } from "../../../ContextHolder";
 function LeftNavSection() {
     const {open,setOpen}=useContext(SideBarOpentShut); 
   return (

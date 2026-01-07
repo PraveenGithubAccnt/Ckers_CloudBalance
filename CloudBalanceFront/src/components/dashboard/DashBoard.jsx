@@ -1,5 +1,5 @@
-import MainNav from "./components/NavBar/MainNav";
-import SideMenuSlider from "./components/SideMenuBar/SideMenuSlider";
+import MainNav from "./components/NavBar/components/MainNav";
+import SideMenuSlider from "./components/SideMenuBar/components/SideMenuSlider";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import Footer from "./Footer";

@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import NotFoundImg from "../assets/notfound.jpg";
 
 function NotFound() {
@@ -19,13 +18,6 @@ function NotFound() {
       <p className="text-gray-600 text-lg mb-4">
         The page you're looking for doesn't exist.
       </p>
-
-      <Link
-        to="/"
-        className="mt-2 px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-all duration-200"
-      >
-        Go Back Home
-      </Link>
 
     </div>
   );

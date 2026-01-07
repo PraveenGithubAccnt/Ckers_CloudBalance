@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
-import { createUser,updateUser } from "../../../../../api/userApi";
+import { createUser, updateUser } from "../../../../../api/userApi";
+import ManageAccount from "./ManageAccount";
 
 function AddUser() {
   const navigate = useNavigate();
@@ -27,38 +28,43 @@ function AddUser() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const userData = {
-    firstName: formData.userFirstName,
-    lastName: formData.userLastName,
-    email: formData.userEmail,
-    password: formData.userPassword,
-    roleName: formData.userRole,
-  };
+    const userData = {
+      firstName: formData.userFirstName,
+      lastName: formData.userLastName,
+      email: formData.userEmail,
+      password: formData.userPassword,
+      roleName: formData.userRole,
+    };
 
-  try {
-    if (isEdit && user) {
-      await updateUser(user.id, userData);
-      setToastMessage("User updated successfully!");
-    } else {
-      await createUser(userData);
-      setToastMessage("User created successfully!");
+    try {
+      if (isEdit && user) {
+        await updateUser(user.id, userData);
+        setToastMessage("User updated successfully!");
+      } else {
+        await createUser(userData);
+        setToastMessage("User created successfully!");
+      }
+
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        navigate("/dashboard/users");
+      }, 1500);
+    } catch (error) {
+      console.error("Error saving user:", error);
+      if (error.response.status === 409) {
+        setToastMessage(
+          error.response.data?.message || "Email already exists"
+        );
+      } else {
+        setToastMessage("Failed to save user. Please try again.");
+      }
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
-
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-      navigate("/dashboard/users");
-    }, 1500);
-
-  } catch (error) {
-    console.error("Error saving user:", error);
-    setToastMessage("Failed to save user. Please try again.");
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  }
-};
+  };
 
   return (
     <div className="space-y-4">
@@ -146,7 +152,6 @@ function AddUser() {
                 placeholder="Enter Password"
                 onChange={handleChange}
                 required={!isEdit}
-
               />
             </div>
 
@@ -165,11 +170,19 @@ function AddUser() {
               >
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
-                <option value="read-only">Read-only</option>
+                <option value="read only">Read only</option>
                 <option value="customer">Customer</option>
               </select>
             </div>
           </div>
+
+          {/* Show ManageAccount only when customer role is selected */}
+          
+          {formData.userRole === "customer" && (
+            <div className="mb-8">
+              <ManageAccount />
+            </div>
+          )}
 
           <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
             <button

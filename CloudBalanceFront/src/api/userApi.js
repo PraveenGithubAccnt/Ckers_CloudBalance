@@ -7,7 +7,7 @@ export const createUser = (userData) => {
 
 // UPDATE user
 export const updateUser = (id, userData) => {
-  return axiosInstance.put(`/users/${id}`, userData);
+  return axiosInstance.patch(`/users/${id}`, userData);
 };
 
 // GET all users
