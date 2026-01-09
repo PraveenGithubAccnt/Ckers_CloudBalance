@@ -44,7 +44,7 @@ function CostExplorerControls({ onChartTypeChange, activeChartType, onFilterClic
               className={`px-3 py-1.5 text-sm rounded-md border transition-colors
                 ${
                   activeGroup === item
-                    ? "bg-blue-600 text-white border-blue-600"
+                    ? "bg-blue-800 text-white border-blue-800"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                 }`}
             >
@@ -117,7 +117,7 @@ function CostExplorerControls({ onChartTypeChange, activeChartType, onFilterClic
             onClick={() => onChartTypeChange('bar')}
             className={`p-2 border rounded-md transition-colors
               ${activeChartType === 'bar' 
-                ? 'bg-blue-600 text-white border-blue-600' 
+                ? 'bg-blue-800 text-white border-blue-800' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
               }`}
             title="Bar Chart"
@@ -128,7 +128,7 @@ function CostExplorerControls({ onChartTypeChange, activeChartType, onFilterClic
             onClick={() => onChartTypeChange('line')}
             className={`p-2 border rounded-md transition-colors
               ${activeChartType === 'line' 
-                ? 'bg-blue-600 text-white border-blue-600' 
+                ? 'bg-blue-800 text-white border-blue-800' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
               }`}
             title="Line Chart"
@@ -139,7 +139,7 @@ function CostExplorerControls({ onChartTypeChange, activeChartType, onFilterClic
             onClick={() => onChartTypeChange('stack')}
             className={`p-2 border rounded-md transition-colors
               ${activeChartType === 'stack' 
-                ? 'bg-blue-600 text-white border-blue-600' 
+                ? 'bg-blue-800 text-white border-blue-800' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
               }`}
             title="Stack Chart"

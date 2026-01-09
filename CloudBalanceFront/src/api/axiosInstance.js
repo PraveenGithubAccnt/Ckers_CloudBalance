@@ -10,7 +10,6 @@ const axiosInstance = axios.create({
 function logoutUser() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  localStorage.removeItem("auth");
   localStorage.removeItem("firstName");
   localStorage.removeItem("lastName");
   localStorage.removeItem("expiresAt");

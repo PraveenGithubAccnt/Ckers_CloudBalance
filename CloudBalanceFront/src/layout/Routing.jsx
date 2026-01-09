@@ -34,19 +34,62 @@ function Routing() {
       <Route path="/" element={<LogInPage />} />
 
       <Route
-        path="dashboard"
-        element={
-          <ProtectedRoute>
-            <DashBoard />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="users" element={<UserManagement />} />
-        <Route path="users/add" element={<AddUser />} />
-        <Route path="costexplorer" element={<CostExplorer />} />
-        <Route path="onboarding" element={<OnBoarding />} />
-        <Route path="awsservices" element={<AwsServices />} />
-      </Route>
+  path="dashboard"
+  element={
+    <ProtectedRoute>
+      <DashBoard />
+    </ProtectedRoute>
+  }
+>
+  {/* ADMIN ONLY */}
+  <Route
+    path="users"
+    element={
+      <ProtectedRoute allowedRoles={["admin","read only"]}>
+        <UserManagement />
+      </ProtectedRoute>
+    }
+  />
+
+  <Route
+    path="users/add"
+    element={
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <AddUser />
+      </ProtectedRoute>
+    }
+  />
+
+  
+  <Route
+    path="onboarding"
+    element={
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <OnBoarding />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* ALL ROLES */}
+  <Route
+    path="awsservices"
+    element={
+      <ProtectedRoute allowedRoles={["admin", "customer", "read only"]}>
+        <AwsServices />
+      </ProtectedRoute>
+    }
+  />
+
+  <Route
+    path="costexplorer"
+    element={
+      <ProtectedRoute allowedRoles={["admin", "customer", "read only"]}>
+        <CostExplorer />
+      </ProtectedRoute>
+    }
+  />
+</Route>
+
 
       <Route path="*" element={<NotFount />} />
     </Routes>

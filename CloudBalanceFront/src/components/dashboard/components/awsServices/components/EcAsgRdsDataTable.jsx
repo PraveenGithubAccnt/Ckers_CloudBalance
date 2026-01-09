@@ -115,7 +115,7 @@ function EcAsgRdsDataTable({ service, data = [] }) {
       <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
         <div className="overflow-auto max-h-[calc(100vh-120px)]">
           <table className="w-full border-collapse">
-            <thead className="sticky top-0 bg-blue-600 z-10">
+            <thead className="sticky top-0 bg-blue-800 z-10">
               <tr>
                 {columns.map((col) => (
                   <th

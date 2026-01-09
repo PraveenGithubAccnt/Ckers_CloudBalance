@@ -12,39 +12,44 @@ function LogInPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      const response = await axiosInstance.post("/auth/login", {
-        email,
-        password,
-      });
+  try {
+    const response = await axiosInstance.post("/auth/login", {
+      email,
+      password,
+    });
 
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("role", response.data.role);
-        localStorage.setItem("firstName", response.data.firstName);
-        localStorage.setItem("lastName", response.data.lastName);
-        localStorage.setItem("expiresAt", Date.now() + response.data.expiresIn * 1000);
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("firstName", response.data.firstName);
+      localStorage.setItem("lastName", response.data.lastName);
+      localStorage.setItem("expiresAt", Date.now() + response.data.expiresIn * 1000);
 
+      // Navigate based on role
+      const role = response.data.role;
+      if (role === 'customer') {
+        navigate("/dashboard/costexplorer", { replace: true });
+      } else {
         navigate("/dashboard/users", { replace: true });
-      } else {
-        setError("Login failed. No token received.");
       }
-    } catch (error) {
-      if (error.response) {
-        setError("Invalid email or password");
-      } else if (error.request) {
-        setError("Cannot connect to server. Please try again.");
-      } else {
-        setError("An error occurred. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      setError("Login failed. No token received.");
     }
-  };
+  } catch (error) {
+    if (error.response) {
+      setError("Invalid email or password");
+    } else if (error.request) {
+      setError("Cannot connect to server. Please try again.");
+    } else {
+      setError("An error occurred. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col">

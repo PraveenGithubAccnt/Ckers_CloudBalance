@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 const data = [
   {
@@ -9,7 +9,6 @@ const data = [
     sep: 38043.52,
     oct: 33826.71,
     nov: 31355.12,
-    total: 221471.37,
   },
   {
     service: "Amazon Relational Database Service",
@@ -19,19 +18,8 @@ const data = [
     sep: 24554.95,
     oct: 23718.76,
     nov: 22354.91,
-    total: 144412.17,
   },
 ];
-
-const grandTotal = {
-  jun: 140810.94,
-  jul: 146451.69,
-  aug: 145951.14,
-  sep: 136922.57,
-  oct: 126344.01,
-  nov: 131514.18,
-  total: 827994.43,
-};
 
 const formatCurrency = (value) =>
   `$${value.toLocaleString("en-US", {
@@ -39,6 +27,31 @@ const formatCurrency = (value) =>
   })}`;
 
 function AwsServiceTable() {
+  // Calculate row totals and grand totals automatically
+  const { dataWithTotals, grandTotal } = useMemo(() => {
+    const months = ["jun", "jul", "aug", "sep", "oct", "nov"];
+    
+    // Calculate total for each row
+    const dataWithTotals = data.map((row) => {
+      const total = months.reduce((sum, month) => sum + (row[month] || 0), 0);
+      return { ...row, total };
+    });
+    
+    // Calculate grand totals for each month and overall total
+    const grandTotal = months.reduce(
+      (acc, month) => {
+        acc[month] = dataWithTotals.reduce((sum, row) => sum + (row[month] || 0), 0);
+        return acc;
+      },
+      {}
+    );
+    
+    // Calculate overall grand total
+    grandTotal.total = dataWithTotals.reduce((sum, row) => sum + row.total, 0);
+    
+    return { dataWithTotals, grandTotal };
+  }, []);
+
   return (
     <div className="w-full px-6">
       <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
@@ -61,7 +74,7 @@ function AwsServiceTable() {
 
             {/* BODY */}
             <tbody>
-              {data.map((row, index) => (
+              {dataWithTotals.map((row, index) => (
                 <tr
                   key={index}
                   className="border-b hover:bg-gray-50 transition"

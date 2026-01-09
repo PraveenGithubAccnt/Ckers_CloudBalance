@@ -2,38 +2,42 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa6";
 import { IoToggle } from "react-icons/io5";
-import { useState } from "react";
 
-function ActionButtons({ onEdit, onDelete }) {
-  const [isEnabled, setIsEnabled] = useState(true);
-
-  const handleToggle = () => {
-    setIsEnabled(!isEnabled);
-  };
-
+function ActionButtons({ onEdit, onDelete, disabled }) {
   return (
     <div className="flex gap-5 items-center">
+      {/* Toggle button */}
       <button
-        onClick={handleToggle}
+        disabled={disabled}
         className={`text-xl transition-colors cursor-pointer ${
-          isEnabled
-            ? "text-blue-500 hover:text-blue-600"
-            : "text-gray-400 hover:text-gray-500"
+          disabled
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-blue-800 hover:text-blue-600"
         }`}
-        title={isEnabled ? "Disable User" : "Enable User"}>
-        {isEnabled ? <IoToggle /> : <FaToggleOff />}
+        title={disabled ? "Read Only" : "Disable User"}
+      >
+        {disabled ? <FaToggleOff /> : <IoToggle />}
       </button>
 
+      {/* Edit button */}
       <button
         onClick={onEdit}
-        className="text-green-600 hover:text-green-700 transition-colors cursor-pointer"
-        title="Edit User">
+        disabled={disabled}
+        className={`text-green-600 transition-colors ${
+          disabled ? "cursor-not-allowed opacity-50" : "hover:text-green-700 cursor-pointer"
+        }`}
+        title="Edit User"
+      >
         <FaEdit />
       </button>
 
+      {/* Delete button */}
       <button
         onClick={onDelete}
-        className="text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+        disabled={disabled}
+        className={`text-red-500 transition-colors ${
+          disabled ? "cursor-not-allowed opacity-50" : "hover:text-red-600 cursor-pointer"
+        }`}
         title="Delete User"
       >
         <RiDeleteBin5Line />

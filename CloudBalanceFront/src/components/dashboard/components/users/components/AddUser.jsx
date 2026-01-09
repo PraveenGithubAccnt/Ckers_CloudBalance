@@ -187,7 +187,7 @@ function AddUser() {
           <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
             <button
               type="submit"
-              className="flex gap-2 items-center bg-blue-500 hover:bg-blue-700 text-white text-base rounded-md p-2 cursor-pointer"
+              className="flex gap-2 items-center bg-blue-800 hover:bg-blue-700 text-white text-base rounded-md p-2 cursor-pointer"
               title="Submit Details"
             >
               <BsFillSendArrowUpFill size={20} />
