@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "../../../../../api/userApi";
-
+import { isReadOnly } from "../../../../../utils/authAccess";
 import ActionButtons from "./ActionButtons";
 import { CgSearchLoading } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ function UserDetailTable() {
   const navigate = useNavigate();
 
   const handleEdit = (user) => {
+    if (isReadOnly()) return;
     navigate("/dashboard/users/add", { state: { user, isEdit: true } });
   };
 
@@ -33,19 +34,16 @@ function UserDetailTable() {
     fetchUsers();
   }, []);
 
-
-   const handleDelete = (userId) => {
+  const handleDelete = (userId) => {
+    if (isReadOnly()) return;
     setSelectedUserId(userId);
     setShowConfirm(true);
   };
 
-  
   const confirmDelete = async () => {
     try {
       await deleteUser(selectedUserId);
-      setUsers((prev) =>
-        prev.filter((user) => user.id !== selectedUserId)
-      );
+      setUsers((prev) => prev.filter((user) => user.id !== selectedUserId));
     } catch (error) {
       console.error("Error deleting user:", error);
       alert("Failed to delete user");
@@ -72,8 +70,8 @@ function UserDetailTable() {
       <div className="flex-1 min-h-0 border border-gray-200 rounded-lg bg-white overflow-hidden">
         <div className="h-full overflow-auto">
           <table className="w-full border-collapse">
-            <thead className="sticky top-0 bg-blue-200 z-10">
-              <tr>
+            <thead className="sticky top-0 bg-blue-800 z-10">
+              <tr className="text-white">
                 <th className="p-3 text-left border-b border-gray-200">ID</th>
                 <th className="p-3 text-left border-b border-gray-200">
                   First Name
@@ -86,8 +84,8 @@ function UserDetailTable() {
                 </th>
                 <th className="p-3 text-left border-b border-gray-200">Role</th>
 
-                <th className="p-3 text-left border-b border-gray-200">
-                  Actions
+                <th className="p-3 text-left border-b border-gray-200 w-[140px]">
+                  {!isReadOnly() ? "Actions" : ""}
                 </th>
               </tr>
             </thead>
@@ -115,10 +113,12 @@ function UserDetailTable() {
                     </div>
                   </td>
                   <td className="p-3 border-b border-gray-100">
-                    <ActionButtons
-                      onEdit={() => handleEdit(user)}
-                      onDelete={() => handleDelete(user.id)}
-                    />
+                    {!isReadOnly() && (
+                      <ActionButtons
+                        onEdit={() => handleEdit(user)}
+                        onDelete={() => handleDelete(user.id)}
+                      />
+                    )}
                   </td>
                 </tr>
               ))}
@@ -131,9 +131,7 @@ function UserDetailTable() {
       {showConfirm && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">
-              Confirm Delete
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
             <p className="text-sm text-gray-600 mb-6">
               Are you sure you want to delete this user?
             </p>

@@ -9,7 +9,6 @@ function RightNavSection() {
 
   const handleLogOut = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("role");
     localStorage.removeItem("auth");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
@@ -24,9 +23,9 @@ function RightNavSection() {
         <div className="flex items-center text-left">
           <div className="text-sm">
             <h4 className="text-gray-500 pl-8">Welcome</h4>
-            <div className="flex items-center text-blue-600 font-medium space-x-1">
+            <div className="flex items-center text-blue-800 font-medium space-x-1">
               <CgProfile className="w-8 h-8" />
-              <span className="cursor-pointer">
+              <span>
                 {firstName} {lastName}
               </span>
             </div>
@@ -35,7 +34,7 @@ function RightNavSection() {
 
         <button
           onClick={handleLogOut}
-          className="flex items-center p-2 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 text-sm cursor-pointer"
+          className="flex items-center p-2 text-white bg-blue-800 rounded-md shadow hover:bg-blue-700 text-sm cursor-pointer"
         >
           <BiLogOut className="w-4 h-4 mr-1" />
           Logout

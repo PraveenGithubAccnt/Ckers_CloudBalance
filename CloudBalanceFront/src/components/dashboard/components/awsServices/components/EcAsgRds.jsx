@@ -19,7 +19,7 @@ function EcAsgRds({ onChange }) {
           className={`px-6 py-2 text-sm font-medium border-r last:border-r-0
             ${
               activeTab === tab
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-800 text-white"
                 : "bg-white text-gray-700 hover:bg-gray-100"
             }`}
         >
