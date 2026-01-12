@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "../../../../../api/userApi";
-import { isReadOnly } from "../../../../../utils/authAccess";
 import ActionButtons from "./ActionButtons";
 import { CgSearchLoading } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 function UserDetailTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const { role } = useSelector((state) => state.auth);
+  const isReadOnly = role === "read only";
   const navigate = useNavigate();
 
   const handleEdit = (user) => {
-    if (isReadOnly()) return;
+    if (isReadOnly) return;
     navigate("/dashboard/users/add", { state: { user, isEdit: true } });
   };
 
@@ -30,12 +31,11 @@ function UserDetailTable() {
         setLoading(false);
       }
     };
-
     fetchUsers();
   }, []);
 
   const handleDelete = (userId) => {
-    if (isReadOnly()) return;
+    if (isReadOnly) return;
     setSelectedUserId(userId);
     setShowConfirm(true);
   };
@@ -85,7 +85,7 @@ function UserDetailTable() {
                 <th className="p-3 text-left border-b border-gray-200">Role</th>
 
                 <th className="p-3 text-left border-b border-gray-200 w-[140px]">
-                  {!isReadOnly() ? "Actions" : ""}
+                  {!isReadOnly ? "Actions" : ""}
                 </th>
               </tr>
             </thead>
@@ -107,13 +107,13 @@ function UserDetailTable() {
                   <td className="p-3 border-b border-gray-100">{user.email}</td>
                   <td className="p-3 border-b border-gray-100">
                     <div className="flex gap-2 flex-wrap">
-                      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                      <span className="px-2 py-1 text-xs rounded-full bg-blue-800 text-white">
                         {user.roleName}
                       </span>
                     </div>
                   </td>
                   <td className="p-3 border-b border-gray-100">
-                    {!isReadOnly() && (
+                    {!isReadOnly && (
                       <ActionButtons
                         onEdit={() => handleEdit(user)}
                         onDelete={() => handleDelete(user.id)}

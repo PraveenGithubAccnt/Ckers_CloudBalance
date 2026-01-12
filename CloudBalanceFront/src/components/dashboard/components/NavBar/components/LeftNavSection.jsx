@@ -2,14 +2,15 @@
 import { IoMenu } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import cloudbalance from "../../../../../assets/cloudbalance.png";
-import { useContext } from "react";
-import { SideBarOpentShut } from "../../../ContextHolder";
+import { useDispatch } from "react-redux";
+import { toggleSidebar } from "../../../../../redux/slice/sidebarSlice";
+
 function LeftNavSection() {
-    const {open,setOpen}=useContext(SideBarOpentShut); 
+     const dispatch = useDispatch(); 
   return (
     <div>
       <div className="flex items-center space-x-8">
-        <button onClick={() => setOpen(!open)}>
+        <button onClick={() =>dispatch(toggleSidebar())}>
           <IoMenu className="w-6 h-6 text-gray-700 cursor-pointer" />
         </button>
 

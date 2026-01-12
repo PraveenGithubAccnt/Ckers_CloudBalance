@@ -1,15 +1,7 @@
-import { jwtDecode } from "jwt-decode";
-
+import { store } from '../redux/store';
 export function getUserRole() {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-
-  try {
-    const decoded = jwtDecode(token);
-    return decoded.role?.toLowerCase(); 
-  } catch {
-    return null;
-  }
+  const state = store.getState();
+  return state.auth.role;
 }
 
 export function isAdmin() {
@@ -21,5 +13,5 @@ export function isCustomer() {
 }
 
 export function isReadOnly() {
-  return getUserRole() === "read only"; 
+  return getUserRole() === "read only";
 }

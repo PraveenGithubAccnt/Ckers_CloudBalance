@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createUser, updateUser } from "../../../../../api/userApi";
+import toast from "react-hot-toast";
 import ManageAccount from "./ManageAccount";
 
 function AddUser() {
@@ -17,13 +18,9 @@ function AddUser() {
     userRole: user?.roleName || "",
   });
 
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-
   const handleChange = (e) => {
     const fieldName = e.target.id;
     const fieldValue = e.target.value;
-
     setFormData({ ...formData, [fieldName]: fieldValue });
   };
 
@@ -41,39 +38,26 @@ function AddUser() {
     try {
       if (isEdit && user) {
         await updateUser(user.id, userData);
-        setToastMessage("User updated successfully!");
+        toast.success("User updated successfully!");
       } else {
         await createUser(userData);
-        setToastMessage("User created successfully!");
+        toast.success("User created successfully!");
       }
 
-      setShowToast(true);
       setTimeout(() => {
-        setShowToast(false);
         navigate("/dashboard/users");
       }, 1500);
     } catch (error) {
-      console.error("Error saving user:", error);
       if (error.response.status === 409) {
-        setToastMessage(
-          error.response.data?.message || "Email already exists"
-        );
+        toast.error(error.response.data?.message || "Email already exists");
       } else {
-        setToastMessage("Failed to save user. Please try again.");
+        toast.error("Failed to save user. Please try again.");
       }
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
     }
   };
 
   return (
     <div className="space-y-4">
-      {showToast && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50">
-          {toastMessage}
-        </div>
-      )}
-
       <div className="bg-white p-4 rounded-md shadow-sm">
         <h2 className="text-xl font-semibold">
           {isEdit ? "Edit User" : "Add New User"}
@@ -177,9 +161,9 @@ function AddUser() {
           </div>
 
           {/* Show ManageAccount only when customer role is selected */}
-          
+
           {formData.userRole === "customer" && (
-            <div className="mb-8">
+            <div>
               <ManageAccount />
             </div>
           )}

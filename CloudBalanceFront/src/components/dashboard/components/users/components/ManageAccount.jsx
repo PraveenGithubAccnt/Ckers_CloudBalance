@@ -1,32 +1,42 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { LuTimerReset } from "react-icons/lu";
-import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
-import { FaRegFolderOpen } from "react-icons/fa";
+import { FaArrowRight, FaArrowLeft, FaRegFolderOpen } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-
-const dummyAccounts = [
-  { id: 1, name: "Roni Thomas", accountId: "989033863264" },
-  { id: 2, name: "Aircel Money", accountId: "767369465358" },
-  { id: 3, name: "Doodhwala", accountId: "237795921511" },
-  { id: 4, name: "AI Gym", accountId: "315756860246" },
-  { id: 5, name: "Tejprakash Sharma", accountId: "861931862932" },
-  { id: 6, name: "Apoyo", accountId: "429796869693" },
-  { id: 7, name: "IDFC", accountId: "003429390769" },
-  { id: 8, name: "Galadari", accountId: "112512014927" },
-];
+import toast from "react-hot-toast";
+import { getAllArnAccnt } from "../../../../../api/awsArnApi";
 
 function ManageAccount() {
-  const [available, setAvailable] = useState(dummyAccounts);
+  const [available, setAvailable] = useState([]);
   const [associated, setAssociated] = useState([]);
   const [selectedAvailable, setSelectedAvailable] = useState([]);
   const [selectedAssociated, setSelectedAssociated] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Filter available accounts based on search
+  // ✅ FETCH ACCOUNTS ON LOAD
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllArnAccnt();
+      setAvailable(res.data || []);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to load account IDs"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter 
   const filteredAvailable = available.filter(
     (acc) =>
-      acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      acc.accountId.includes(searchTerm)
+      acc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      acc.accountId?.includes(searchTerm)
   );
 
   // Toggle selection
@@ -73,7 +83,7 @@ function ManageAccount() {
 
   // Reset
   const handleReset = () => {
-    setAvailable(dummyAccounts);
+    fetchAccounts();
     setAssociated([]);
     setSelectedAvailable([]);
     setSelectedAssociated([]);
@@ -94,35 +104,35 @@ function ManageAccount() {
         </button>
       </div>
 
-      {/* Main Layout */}
+    
       <div className="p-6">
         <div className="grid grid-cols-[1fr_auto_1fr] gap-6">
-          {/* Choose Account IDs */}
+          {/* Available Accounts */}
           <div className="border border-gray-200 rounded-md bg-gray-50">
-            <div className="p-3 bg-white border-b border-gray-200 font-medium flex justify-between items-center">
+            <div className="p-3 bg-white border-b border-gray-200 font-medium flex justify-between">
               <span>Choose Account IDs to Associate</span>
               <span className="text-blue-600 text-sm font-semibold">
                 {available.length} Available
               </span>
             </div>
 
-            {/* Search Box */}
+            {/* Search */}
             <div className="p-3 bg-white border-b border-gray-200">
               <div className="relative">
-                <IoSearchOutline className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <IoSearchOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-10 py-2 border rounded-md"
                 />
               </div>
             </div>
 
             {/* Select All */}
-            <div className="bg-white border-b border-gray-200">
-              <label className="flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-50">
+            <div className="bg-white border-b">
+              <label className="flex items-center gap-3 px-3 py-3">
                 <input
                   type="checkbox"
                   checked={
@@ -130,32 +140,34 @@ function ManageAccount() {
                     selectedAvailable.length === filteredAvailable.length
                   }
                   onChange={selectAllAvailable}
-                  className="w-4 h-4 cursor-pointer"
                 />
                 <span className="text-sm font-medium">Select All</span>
               </label>
             </div>
 
-            {/* Account List */}
+            {/* List */}
             <div className="max-h-80 overflow-y-auto bg-white">
-              {filteredAvailable.map((acc, index) => (
-                <label
-                  key={acc.id}
-                  className={`flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-100 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAvailable.includes(acc.id)}
-                    onChange={() => toggleSelection(acc.id, "available")}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span className="text-sm">
-                    {acc.name} ({acc.accountId})
-                  </span>
-                </label>
-              ))}
+              {loading ? (
+                <p className="p-4 text-sm text-gray-500">Loading...</p>
+              ) : (
+                filteredAvailable.map((acc, index) => (
+                  <label
+                    key={acc.id}
+                    className={`flex items-center gap-3 px-3 py-3 hover:bg-gray-100 ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedAvailable.includes(acc.id)}
+                      onChange={() => toggleSelection(acc.id, "available")}
+                    />
+                    <span className="text-sm">
+                      {acc.name} ({acc.accountId})
+                    </span>
+                  </label>
+                ))
+              )}
             </div>
           </div>
 
@@ -163,55 +175,44 @@ function ManageAccount() {
           <div className="flex flex-col items-center justify-center gap-4">
             <button
               onClick={addAccounts}
-              disabled={selectedAvailable.length === 0}
-              className="p-3 rounded-full bg-gray-700 hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-white"
-              title="Add selected accounts"
+              disabled={!selectedAvailable.length}
+              className="p-3 rounded-full bg-gray-700 text-white disabled:opacity-30"
             >
-              <FaArrowRight size={18} />
+              <FaArrowRight />
             </button>
             <button
               onClick={removeAccounts}
-              disabled={selectedAssociated.length === 0}
-              className="p-3 rounded-full bg-gray-700 hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-white"
-              title="Remove selected accounts"
+              disabled={!selectedAssociated.length}
+              className="p-3 rounded-full bg-gray-700 text-white disabled:opacity-30"
             >
-              <FaArrowLeft size={18} />
+              <FaArrowLeft />
             </button>
           </div>
 
-          {/* Associated Account IDs */}
+          {/* Associated */}
           <div className="border border-gray-200 rounded-md bg-gray-50">
-            <div className="p-3 bg-white border-b border-gray-200 font-medium flex justify-between items-center">
-              <span>Associated Account IDs</span>
-              <span className="text-blue-600 text-sm font-semibold">
-                {associated.length} Added
-              </span>
+            <div className="p-3 bg-white border-b font-medium">
+              Associated Account IDs ({associated.length})
             </div>
 
             <div className="max-h-96 overflow-y-auto bg-white">
               {associated.length === 0 ? (
-                <div className="flex flex-col items-center justify-center text-gray-400 py-20">
-                  <FaRegFolderOpen size={64} className="mb-4" />
-                  <p className="font-semibold text-lg text-gray-700 mb-1">
-                    No Account IDs Added
-                  </p>
-                  <p className="text-sm">
-                    Selected Account IDs will be shown here.
-                  </p>
+                <div className="flex flex-col items-center py-20 text-gray-400">
+                  <FaRegFolderOpen size={48} />
+                  <p>No Account IDs Added</p>
                 </div>
               ) : (
-                associated.map((acc, index) => (
+                associated.map((acc) => (
                   <label
                     key={acc.id}
-                    className={`flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-100 ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
+                    className="flex items-center gap-3 px-3 py-3 hover:bg-gray-100"
                   >
                     <input
                       type="checkbox"
                       checked={selectedAssociated.includes(acc.id)}
-                      onChange={() => toggleSelection(acc.id, "associated")}
-                      className="w-4 h-4 cursor-pointer"
+                      onChange={() =>
+                        toggleSelection(acc.id, "associated")
+                      }
                     />
                     <span className="text-sm">
                       {acc.name} ({acc.accountId})

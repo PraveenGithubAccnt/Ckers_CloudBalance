@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import JsonDisplayBox from "./JsonDisplayBox";
 import imaroleimg from "../../../../../assets/imaroleimg.png";
+
 function IamRoleBody({
   arn,
   accountId,
@@ -12,7 +13,6 @@ function IamRoleBody({
   setAccountName
 }) {
   const [copied, setCopied] = useState(false);
-
   const roleName = "CK-Tuner-Role-dev2";
 
   const handleCopy = () => {
@@ -84,7 +84,6 @@ function IamRoleBody({
               <span className="font-semibold">Create Role</span> -
             </p>
 
-            {/* Role Name Input Box*/}
             <div
               onClick={handleCopy}
               className="flex items-center gap-2 bg-gray-50 border border-gray-300 rounded p-3 hover:bg-blue-50 transition-colors cursor-pointer relative"
@@ -143,8 +142,6 @@ function IamRoleBody({
               Paste the copied Role ARN below -
             </p>
 
-           
-            {/* Input Fields */}
             <div className="flex items-end justify-between gap-6">
               <div>
                 <label className="block text-sm text-gray-700 mb-2">

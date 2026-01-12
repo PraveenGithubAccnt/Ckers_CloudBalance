@@ -1,4 +1,6 @@
 import axios from "axios";
+import { logout } from "../redux/slice/authSlice";
+import toast from "react-hot-toast";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080/api",
@@ -7,55 +9,61 @@ const axiosInstance = axios.create({
   },
 });
 
-function logoutUser() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("role");
-  localStorage.removeItem("firstName");
-  localStorage.removeItem("lastName");
-  localStorage.removeItem("expiresAt");
-  window.location.href = "/";
-}
+// Inject Redux store
+let store;
+export const injectStore = (_store) => {
+  store = _store;
+};
 
-// REQUEST INTERCEPTOR - Add JWT token to every request
+const logoutUser = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("expiresAt");
+
+  if (store) {
+    store.dispatch(logout());
+  }
+  // cross-tab logout
+  localStorage.setItem("logout", Date.now().toString());
+  window.location.href = '/';
+};
+
+// REQUEST INTERCEPTOR
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    const expiresAt = Number(localStorage.getItem("expiresAt"));
-
-    // check token for login endpoints
-    const isAuthEndpoint = config.url?.includes("/auth/login");
-
-    if (isAuthEndpoint) {
-      // Allow login without token
+    // Allow login endpoint
+    if (config.url?.includes("/auth/login")) {
       return config;
     }
 
-    // Check token expiry only for protected endpoints
-    if (!token || Date.now() > Number(expiresAt)) {
+    const token = localStorage.getItem("token");
+    const expiresAt = localStorage.getItem("expiresAt");
+
+    // Check if token exists
+    if (!token) {
       logoutUser();
-      throw new axios.Cancel("Token expired please login again");
+      return Promise.reject(new Error("No token found"));
     }
 
-    // Add token to request
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Check token expiration only if expiresAt is set
+    if (expiresAt && Date.now() > Number(expiresAt)) {
+      logoutUser();
+      return Promise.reject(new Error("Session expired"));
     }
 
+    config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// RESPONSE INTERCEPTOR - Handle errors
+// RESPONSE INTERCEPTOR
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API Error:", error.response || error.message);
+    const status = error?.response?.status;
 
-    // Handle token expiration
-    if (error.response?.status === 401) {
+    if (status === 401) {
+      toast.error(error.response?.data?.message || "Unauthorized");
       logoutUser();
     }
 
