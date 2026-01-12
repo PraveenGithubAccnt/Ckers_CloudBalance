@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -29,9 +31,6 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
-//    @Column(name = "last_login")
-//    private Date lastLogin;
-
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -47,10 +46,28 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-
-
     // Helper method to maintain role
     public void addRole(Role role) {
         this.role=role;
+    }
+
+    // Many-to-Many relationship with ArnAccount, owning side
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "user_arn_accounts",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "arn_account_id", referencedColumnName = "id")
+    )
+    private Set<ArnAccount> arnAccounts = new HashSet<>();
+
+    // Helper methods for ArnAccount relationship
+    public void addArnAccount(ArnAccount arnAccount) {
+        this.arnAccounts.add(arnAccount);
+        arnAccount.getUsers().add(this);
+    }
+
+    public void removeArnAccount(ArnAccount arnAccount) {
+        this.arnAccounts.remove(arnAccount);
+        arnAccount.getUsers().remove(this);
     }
 }

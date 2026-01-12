@@ -6,7 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -27,51 +28,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // Read Authorization header
         String authHeader = request.getHeader("Authorization");
 
-        // Check if header exists and starts with "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract token
         String token = authHeader.substring(7);
 
-        // validate token
         if (!jwtUtil.isTokenValid(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract data from token
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
 
-        // Create Authentication object
-        String normalizedRole = role
-                .trim()
-                .toUpperCase()
-                .replace(" ", "_");
+        String normalizedRole = role.trim().toUpperCase().replace(" ", "_");
+
+        UserDetails userDetails = User.builder()
+                .username(email)
+                .password("")
+                .authorities("ROLE_" + normalizedRole)
+                .build();
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        email,
+                        userDetails,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + normalizedRole))
+                        userDetails.getAuthorities()
                 );
 
-//        System.out.println("ROLE FROM TOKEN = " + role);
-//        System.out.println("GRANTED AUTHORITY = ROLE_" + normalizedRole);
-//        System.out.println("Authorities = " + authentication.getAuthorities());
-
-
-
-        // set authentication in security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // continue filter chain
         filterChain.doFilter(request, response);
     }
 }

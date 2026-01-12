@@ -5,8 +5,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LoginResponseDTO {
+public class UserProfileDTO
+{
 
-    private String token;
-    private long expiresIn;
+        private String firstName;
+        private String lastName;
+        private String role;
+
+
 }
