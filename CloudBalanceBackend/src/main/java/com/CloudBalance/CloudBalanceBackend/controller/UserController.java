@@ -41,7 +41,7 @@ public class UserController {
     }
 
     // Get user by ID
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
 
@@ -62,7 +62,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(
-              @Valid @RequestBody UserCreateDTO createDTO) {
+            @Valid @RequestBody UserCreateDTO createDTO) {
 
         User user = new User();
         user.setFirstName(createDTO.getFirstName());
@@ -70,12 +70,16 @@ public class UserController {
         user.setEmail(createDTO.getEmail());
         user.setPassword(createDTO.getPassword());
 
-        User savedUser = userService.createUser(user, createDTO.getRoleName());
+        //arnAccountIds
+        User savedUser = userService.createUser(
+                user,
+                createDTO.getRoleName(),
+                createDTO.getArnAccountIds()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(UserResponseDTO.fromEntity(savedUser));
     }
-
     // Update user
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
@@ -93,7 +97,13 @@ public class UserController {
             userDetails.setPassword(updateDTO.getPassword());
         }
 
-        User updatedUser = userService.updateUser(id, userDetails, updateDTO.getRoleName());
+        //arnAccountIds
+        User updatedUser = userService.updateUser(
+                id,
+                userDetails,
+                updateDTO.getRoleName(),
+                updateDTO.getArnAccountIds()
+        );
 
         return ResponseEntity.ok(UserResponseDTO.fromEntity(updatedUser));
     }

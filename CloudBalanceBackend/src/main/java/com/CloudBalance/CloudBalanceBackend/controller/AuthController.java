@@ -47,7 +47,8 @@ public class AuthController {
         UserProfileDTO profile = new UserProfileDTO(
                 user.getFirstName(),
                 user.getLastName(),
-                user.getRole().getRoleName()
+                user.getRole().getRoleName(),
+                user.getId()
         );
 
         return ResponseEntity.ok(profile);

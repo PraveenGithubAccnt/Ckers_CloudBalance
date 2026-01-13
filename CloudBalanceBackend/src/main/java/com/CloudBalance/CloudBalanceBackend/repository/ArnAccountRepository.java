@@ -4,6 +4,7 @@ import com.CloudBalance.CloudBalanceBackend.entity.ArnAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,6 @@ public interface ArnAccountRepository extends JpaRepository<ArnAccount,Long>
     // Check if Account ID exists
     boolean existsByAccountId(String accountId);
 
+    //Find multiple ARN accounts by IDs
+    List<ArnAccount> findByIdIn(List<Long> ids);
 }

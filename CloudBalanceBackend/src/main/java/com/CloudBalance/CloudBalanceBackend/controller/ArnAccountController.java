@@ -1,5 +1,4 @@
 package com.CloudBalance.CloudBalanceBackend.controller;
-
 import com.CloudBalance.CloudBalanceBackend.dto.ArnAccountCreateDTO;
 import com.CloudBalance.CloudBalanceBackend.dto.ArnAccountResponseDTO;
 import com.CloudBalance.CloudBalanceBackend.entity.ArnAccount;
@@ -33,15 +32,7 @@ public class ArnAccountController {
         return ResponseEntity.ok(response);
     }
 
-    //Get ARN account by ID
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/{id}")
-    public ResponseEntity<ArnAccountResponseDTO> getArnAccountById(@PathVariable Long id) {
-        ArnAccount arnAccount = arnAccountService.getArnAccountById(id)
-                .orElseThrow(() -> new RuntimeException("ARN Account not found with id: " + id));
 
-        return ResponseEntity.ok(ArnAccountResponseDTO.fromEntity(arnAccount));
-    }
 
     //Create new ARN account
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -61,4 +52,14 @@ public class ArnAccountController {
     }
 
 
+    //Get ARN account by ID
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ArnAccountResponseDTO> getArnAccountById(@PathVariable Long id) {
+//        ArnAccount arnAccount = arnAccountService.getArnAccountById(id)
+//                .orElseThrow(() -> new RuntimeException("ARN Account not found with id: " + id));
+//
+//        return ResponseEntity.ok(ArnAccountResponseDTO.fromEntity(arnAccount));
+//    }
+//
     }
