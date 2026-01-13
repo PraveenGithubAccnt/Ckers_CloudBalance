@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { FaUserFriends, FaRocket, FaChartArea, FaAws } from "react-icons/fa";
-import { useContext } from "react";
-import { SideBarOpentShut } from "../../../ContextHolder";
-import { getUserRole } from "../../../../../utils/authAccess";
+import { useSelector } from "react-redux";
+
 function SideMenuSlider() {
-  const { open } = useContext(SideBarOpentShut);
- // admin | customer | read-only
- const role = getUserRole();
+  const open = useSelector((state) => state.sidebar.open);
+  const { role, authLoading } = useSelector((state) => state.auth);
+
+  if (authLoading) return null;
+
   const SideBarItems = [
     {
       to: "/dashboard/users",
@@ -41,7 +42,7 @@ function SideMenuSlider() {
     >
       <ul className="p-4 space-y-6">
         {SideBarItems
-          .filter((item) => item.roles.includes(role)) 
+          .filter((item) => role && item.roles.includes(role))
           .map((item) => (
             <li key={item.to}>
               <NavLink
@@ -56,7 +57,6 @@ function SideMenuSlider() {
                 }
               >
                 {item.icon}
-
                 <span
                   className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap
                   ${

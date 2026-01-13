@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -21,4 +22,6 @@ public class UserUpdateDTO {
     private String password;
 
     private String roleName;
+
+    private List<Long> arnAccountIds;
 }

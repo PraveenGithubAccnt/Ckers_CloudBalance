@@ -2,54 +2,58 @@ import { useState } from "react";
 import cloudbalance from "../assets/cloudbalance.png";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import { fetchUserProfile } from "../redux/slice/authSlice";
+import { useDispatch } from "react-redux";
 
 function LogInPage() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    const response = await axiosInstance.post("/auth/login", {
-      email,
-      password,
-    });
+    try {
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
 
-    if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("firstName", response.data.firstName);
-      localStorage.setItem("lastName", response.data.lastName);
-      localStorage.setItem("expiresAt", Date.now() + response.data.expiresIn * 1000);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("expiresAt",
+          Date.now() + response.data.expiresIn * 1000
+        );
 
-      // Navigate based on role
-      const role = response.data.role;
-      if (role === 'customer') {
-        navigate("/dashboard/costexplorer", { replace: true });
+        dispatch(fetchUserProfile());
+
+        // Navigate based on role
+        const role = response.data.role;
+        if (role === "customer") {
+          navigate("/dashboard/costexplorer", { replace: true });
+        } else {
+          navigate("/dashboard/users", { replace: true });
+        }
       } else {
-        navigate("/dashboard/users", { replace: true });
+        setError("Login failed. No token received.");
       }
-    } else {
-      setError("Login failed. No token received.");
+    } catch (error) {
+      if (error.response) {
+        setError("Invalid email or password");
+      } else if (error.request) {
+        setError("Cannot connect to server. Please try again.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    if (error.response) {
-      setError("Invalid email or password");
-    } else if (error.request) {
-      setError("Cannot connect to server. Please try again.");
-    } else {
-      setError("An error occurred. Please try again.");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -112,7 +116,7 @@ function LogInPage() {
               className={`w-full py-2 rounded-sm font-semibold transition ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed text-gray-700"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-blue-800 hover:bg-blue-700 text-white"
               }`}
             >
               {loading ? "Logging in..." : "LOGIN"}

@@ -8,8 +8,5 @@ import lombok.Getter;
 public class LoginResponseDTO {
 
     private String token;
-    private String role;
-    private String firstName;
-    private String lastName;
     private long expiresIn;
 }

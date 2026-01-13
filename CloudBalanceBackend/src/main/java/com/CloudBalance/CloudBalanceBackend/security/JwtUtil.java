@@ -14,7 +14,7 @@ public class JwtUtil {
     // Token expires after 15 minutes
     private static final long EXPIRATION_TIME = 15 * 60 * 1000;
 
-//    private static final long EXPIRATION_TIME = 2 * 60 * 1000;
+   // private static final long EXPIRATION_TIME = 2 * 60 * 1000;
 
     // Secret key
     private static final String SECRET = "cloudbalance-secret-key-should-be-very-secure-34xsw13-67ghjq2-67unt4es2";

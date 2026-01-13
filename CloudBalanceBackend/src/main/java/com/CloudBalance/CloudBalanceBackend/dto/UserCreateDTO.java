@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -31,5 +32,8 @@ public class UserCreateDTO {
     @NotBlank(message = "Role is required")
     private String roleName;
 
+    private List<Long> arnAccountIds;
+
 //    private Date lastLogin;
+
 }

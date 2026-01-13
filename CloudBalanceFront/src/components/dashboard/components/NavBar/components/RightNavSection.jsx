@@ -1,17 +1,13 @@
 import { CgProfile } from "react-icons/cg";
 import { BiLogOut } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 function RightNavSection() {
   const navigate = useNavigate();
-  const firstName = localStorage.getItem("firstName");
-  const lastName = localStorage.getItem("lastName");
+  const { firstName, lastName } = useSelector((state) => state.auth);
 
   const handleLogOut = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("auth");
-    localStorage.removeItem("firstName");
-    localStorage.removeItem("lastName");
     localStorage.removeItem("expiresAt");
     localStorage.setItem("logout", Date.now());
     navigate("/", { replace: true });

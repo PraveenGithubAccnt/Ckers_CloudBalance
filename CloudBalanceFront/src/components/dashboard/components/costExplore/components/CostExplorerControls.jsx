@@ -13,7 +13,6 @@ const groupOptions = [
   "Usage Type",
   "Platform",
   "Region",
-  "Usage Type Group",
 ];
 
 const months = [

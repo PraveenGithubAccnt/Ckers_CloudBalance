@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { LuTimerReset } from "react-icons/lu";
 
-
 function FilterCost() {
+  // Store selected filters
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
   const filters = [
     "Service",
     "Instance Type",
@@ -20,21 +23,35 @@ function FilterCost() {
     "Billing Entity",
   ];
 
+
+
+ 
+  const handleCheckboxChange = (filter) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((item) => item !== filter)
+        : [...prev, filter]
+    );
+  };
+
+  // Reset all filters
+  const handleReset = () => {
+    setSelectedFilters([]);
+  };
+
   return (
     <div className="h-full w-[320px] bg-white border border-gray-300 rounded-r-md shadow-xl flex flex-col">
+      
       {/* HEADER */}
       <div className="flex items-center justify-between p-4 border-b bg-white rounded-tr-md">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold">Filters</h3>
-          
-        </div>
+        <h3 className="text-sm font-semibold">Filters</h3>
+
         <button
-          onClick={() => {
-            console.log("Reset all filters");
-          }}
+          onClick={handleReset}
           className="text-sm text-blue-500 hover:text-blue-700 font-medium flex items-center gap-1"
         >
-          <span>Reset All</span> <LuTimerReset />
+          <span>Reset All</span>
+          <LuTimerReset />
         </button>
       </div>
 
@@ -46,7 +63,12 @@ function FilterCost() {
             className="flex items-center justify-between text-gray-700 text-sm cursor-pointer hover:bg-gray-50 p-2 rounded"
           >
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="h-4 w-4 cursor-pointer" />
+              <input
+                type="checkbox"
+                className="h-4 w-4 cursor-pointer"
+                checked={selectedFilters.includes(item)}
+                onChange={() => handleCheckboxChange(item)}
+              />
               {item}
             </div>
             <span className="text-xs text-gray-400">Include Only</span>

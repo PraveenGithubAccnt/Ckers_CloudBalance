@@ -1,14 +1,21 @@
 import { Navigate } from "react-router-dom";
-import { getUserRole } from "../utils/authAccess";
+import { useSelector } from "react-redux";
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const token = localStorage.getItem("token");
-  const role = getUserRole();
+  const { isAuthenticated, role, authLoading, userId } = useSelector(
+    (state) => state.auth
+  );
+console.log({ authLoading, isAuthenticated, role, userId });
 
-  if (!token) {
+  //Wait for profile API
+  if (authLoading) return null; 
+
+  //Not logged in
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
+  //Role not allowed
   if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/dashboard/costexplorer" replace />;
   }

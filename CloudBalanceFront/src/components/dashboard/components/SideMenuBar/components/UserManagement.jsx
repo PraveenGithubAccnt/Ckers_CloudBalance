@@ -2,15 +2,15 @@ import { useState } from "react";
 import UserDetailTable from "../../users/components/UserDetailTable";
 import { IoMdPersonAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { isReadOnly } from "../../../../../utils/authAccess";
-
+import { useSelector } from "react-redux";
 function UserManagement() {
   const navigate = useNavigate();
-
+  const {role} =useSelector((state)=>state.auth)
+  const isReadOnly =role==='read only'
   const [activeFilter, setActiveFilter] = useState("Active");
 
   function navigateToForm() {
-    if (isReadOnly()) return;
+    if (isReadOnly) return;
     navigate("/dashboard/users/add");
   }
 
@@ -19,7 +19,7 @@ function UserManagement() {
       <h2 className="text-2xl font-semibold mb-4">Users</h2>
       <div className="bg-white p-3 rounded-sm">
         <div className="flex items-center justify-between mb-3">
-          {!isReadOnly() && (
+          {!isReadOnly && (
             <div className="bg-blue-800 text-center text-white rounded-sm p-2">
               <button
                 onClick={navigateToForm}

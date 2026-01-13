@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createUser, updateUser } from "../../../../../api/userApi";
+import toast from "react-hot-toast";
 import ManageAccount from "./ManageAccount";
 
 function AddUser() {
@@ -17,14 +18,18 @@ function AddUser() {
     userRole: user?.roleName || "",
   });
 
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  //Store associated ARN account IDs
+  const [associatedArnIds, setAssociatedArnIds] = useState([]);
 
   const handleChange = (e) => {
     const fieldName = e.target.id;
     const fieldValue = e.target.value;
-
     setFormData({ ...formData, [fieldName]: fieldValue });
+  };
+
+  //Handle ARN account changes from ManageAccount component
+  const handleAssociatedChange = (arnIds) => {
+    setAssociatedArnIds(arnIds);
   };
 
   const handleSubmit = async (e) => {
@@ -34,53 +39,45 @@ function AddUser() {
       firstName: formData.userFirstName,
       lastName: formData.userLastName,
       email: formData.userEmail,
-      password: formData.userPassword,
       roleName: formData.userRole,
+      //only password if provided
+      ...(formData.userPassword && { password: formData.userPassword }),
+      //ARN account IDs only for customer role
+      ...(formData.userRole === "customer" && {
+        arnAccountIds: associatedArnIds,
+      }),
     };
 
     try {
       if (isEdit && user) {
         await updateUser(user.id, userData);
-        setToastMessage("User updated successfully!");
+        toast.success("User updated successfully!");
       } else {
         await createUser(userData);
-        setToastMessage("User created successfully!");
+        toast.success("User created successfully!");
       }
 
-      setShowToast(true);
       setTimeout(() => {
-        setShowToast(false);
         navigate("/dashboard/users");
       }, 1500);
     } catch (error) {
-      console.error("Error saving user:", error);
-      if (error.response.status === 409) {
-        setToastMessage(
-          error.response.data?.message || "Email already exists"
-        );
+      if (error.response?.status === 409) {
+        toast.error(error.response.data?.message || "Email already exists");
       } else {
-        setToastMessage("Failed to save user. Please try again.");
+        toast.error("Failed to save user. Please try again.");
       }
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
     }
   };
 
   return (
     <div className="space-y-4">
-      {showToast && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50">
-          {toastMessage}
-        </div>
-      )}
-
       <div className="bg-white p-4 rounded-md shadow-sm">
         <h2 className="text-xl font-semibold">
           {isEdit ? "Edit User" : "Add New User"}
         </h2>
       </div>
 
-      <div className="bg-white mt-4 rounded-md p-6 shadow-md">
+      <div className="bg-white rounded-md p-6 shadow-md">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-6 mb-8">
             <div>
@@ -139,7 +136,7 @@ function AddUser() {
 
             <div>
               <label
-                htmlFor="userpassword"
+                htmlFor="userPassword"
                 className="block text-sm font-medium text-gray-700 mb-1 after:content-['*'] after:text-red-500 after:ml-1"
               >
                 Password
@@ -149,7 +146,7 @@ function AddUser() {
                 type="password"
                 id="userPassword"
                 value={formData.userPassword}
-                placeholder="Enter Password"
+                placeholder={isEdit ? "Enter new password" : "Enter Password"}
                 onChange={handleChange}
                 required={!isEdit}
               />
@@ -177,10 +174,12 @@ function AddUser() {
           </div>
 
           {/* Show ManageAccount only when customer role is selected */}
-          
           {formData.userRole === "customer" && (
-            <div className="mb-8">
-              <ManageAccount />
+            <div>
+              <ManageAccount
+                userArnAccounts={user?.arnAccounts || []}
+                onAssociatedChange={handleAssociatedChange}
+              />
             </div>
           )}
 
