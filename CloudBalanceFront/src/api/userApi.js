@@ -10,6 +10,11 @@ export const updateUser = (id, userData) => {
   return axiosInstance.patch(`/users/${id}`, userData);
 };
 
+//GET user by id
+export const getUsersById = (id) => {
+  return axiosInstance.get(`/users/${id}`);
+};
+
 // GET all users
 export const getAllUsers = () => {
   return axiosInstance.get("/users");

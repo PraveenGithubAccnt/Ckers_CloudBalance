@@ -4,24 +4,64 @@ import { FaArrowRight, FaArrowLeft, FaRegFolderOpen } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { getAllArnAccnt } from "../../../../../api/awsArnApi";
+import { useRef } from "react";
 
-function ManageAccount() {
+function ManageAccount({ userArnAccounts = [], onAssociatedChange }) {
   const [available, setAvailable] = useState([]);
   const [associated, setAssociated] = useState([]);
   const [selectedAvailable, setSelectedAvailable] = useState([]);
   const [selectedAssociated, setSelectedAssociated] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [allAccounts, setAllAccounts] = useState([]);
 
-  // ✅ FETCH ACCOUNTS ON LOAD
+  //Prevent infinite parent update loop
+  const prevAssociatedIdsRef = useRef([]);
+
+  // FETCH ACCOUNTS ON LOAD
   useEffect(() => {
     fetchAccounts();
   }, []);
+
+  // PREFILL ASSOCIATED ACCOUNTS (EDIT USER)
+  useEffect(() => {
+    if (!allAccounts.length || !userArnAccounts.length) return;
+
+    const userAssociated = allAccounts.filter((acc) =>
+      userArnAccounts.some(
+        (userAcc) => userAcc.accountId === acc.accountId
+      )
+    );
+
+    const remaining = allAccounts.filter(
+      (acc) =>
+        !userArnAccounts.some(
+          (userAcc) => userAcc.accountId === acc.accountId
+        )
+    );
+
+    setAssociated(userAssociated);
+    setAvailable(remaining);
+  }, [allAccounts, userArnAccounts]);
+
+  //Notify parent ONLY when IDs actually change
+  useEffect(() => {
+    const associatedIds = associated.map((acc) => acc.id);
+
+    if (
+      JSON.stringify(prevAssociatedIdsRef.current) !==
+      JSON.stringify(associatedIds)
+    ) {
+      prevAssociatedIdsRef.current = associatedIds;
+      onAssociatedChange?.(associatedIds);
+    }
+  }, [associated, onAssociatedChange]);
 
   const fetchAccounts = async () => {
     setLoading(true);
     try {
       const res = await getAllArnAccnt();
+      setAllAccounts(res.data || []);
       setAvailable(res.data || []);
     } catch (err) {
       toast.error(
@@ -32,7 +72,7 @@ function ManageAccount() {
     }
   };
 
-  // Filter 
+  // Filter
   const filteredAvailable = available.filter(
     (acc) =>
       acc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,18 +94,20 @@ function ManageAccount() {
 
   // Select all available
   const selectAllAvailable = (e) => {
-    if (e.target.checked) {
-      setSelectedAvailable(filteredAvailable.map((a) => a.id));
-    } else {
-      setSelectedAvailable([]);
-    }
+    setSelectedAvailable(
+      e.target.checked ? filteredAvailable.map((a) => a.id) : []
+    );
   };
 
   // Move to associated
   const addAccounts = () => {
-    const toAdd = available.filter((a) => selectedAvailable.includes(a.id));
-    setAssociated([...associated, ...toAdd]);
-    setAvailable(available.filter((a) => !selectedAvailable.includes(a.id)));
+    const toAdd = available.filter((a) =>
+      selectedAvailable.includes(a.id)
+    );
+    setAssociated((prev) => [...prev, ...toAdd]);
+    setAvailable((prev) =>
+      prev.filter((a) => !selectedAvailable.includes(a.id))
+    );
     setSelectedAvailable([]);
   };
 
@@ -74,26 +116,27 @@ function ManageAccount() {
     const toRemove = associated.filter((a) =>
       selectedAssociated.includes(a.id)
     );
-    setAvailable([...available, ...toRemove]);
-    setAssociated(
-      associated.filter((a) => !selectedAssociated.includes(a.id))
+    setAvailable((prev) => [...prev, ...toRemove]);
+    setAssociated((prev) =>
+      prev.filter((a) => !selectedAssociated.includes(a.id))
     );
     setSelectedAssociated([]);
   };
 
   // Reset
   const handleReset = () => {
-    fetchAccounts();
+    setAvailable(allAccounts);
     setAssociated([]);
     setSelectedAvailable([]);
     setSelectedAssociated([]);
     setSearchTerm("");
   };
 
+
   return (
     <div className="bg-white rounded-md shadow">
       {/* Header */}
-      <div className="flex items-center gap-4 p-4 border-b border-gray-200">
+      <div className="flex items-center gap-4 p-2 border-b border-gray-200">
         <h3 className="text-lg font-semibold">Manage Account Id(s)</h3> |
         <button
           onClick={handleReset}
@@ -104,20 +147,18 @@ function ManageAccount() {
         </button>
       </div>
 
-    
       <div className="p-6">
         <div className="grid grid-cols-[1fr_auto_1fr] gap-6">
-          {/* Available Accounts */}
+          {/* AVAILABLE */}
           <div className="border border-gray-200 rounded-md bg-gray-50">
-            <div className="p-3 bg-white border-b border-gray-200 font-medium flex justify-between">
+            <div className="p-3 bg-white border-b font-medium flex justify-between">
               <span>Choose Account IDs to Associate</span>
               <span className="text-blue-600 text-sm font-semibold">
                 {available.length} Available
               </span>
             </div>
 
-            {/* Search */}
-            <div className="p-3 bg-white border-b border-gray-200">
+            <div className="p-3 bg-white border-b">
               <div className="relative">
                 <IoSearchOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -130,7 +171,6 @@ function ManageAccount() {
               </div>
             </div>
 
-            {/* Select All */}
             <div className="bg-white border-b">
               <label className="flex items-center gap-3 px-3 py-3">
                 <input
@@ -145,7 +185,6 @@ function ManageAccount() {
               </label>
             </div>
 
-            {/* List */}
             <div className="max-h-80 overflow-y-auto bg-white">
               {loading ? (
                 <p className="p-4 text-sm text-gray-500">Loading...</p>
@@ -160,7 +199,9 @@ function ManageAccount() {
                     <input
                       type="checkbox"
                       checked={selectedAvailable.includes(acc.id)}
-                      onChange={() => toggleSelection(acc.id, "available")}
+                      onChange={() =>
+                        toggleSelection(acc.id, "available")
+                      }
                     />
                     <span className="text-sm">
                       {acc.name} ({acc.accountId})
@@ -171,7 +212,7 @@ function ManageAccount() {
             </div>
           </div>
 
-          {/* Arrows */}
+          {/* ARROWS */}
           <div className="flex flex-col items-center justify-center gap-4">
             <button
               onClick={addAccounts}
@@ -189,7 +230,7 @@ function ManageAccount() {
             </button>
           </div>
 
-          {/* Associated */}
+          {/* ASSOCIATED */}
           <div className="border border-gray-200 rounded-md bg-gray-50">
             <div className="p-3 bg-white border-b font-medium">
               Associated Account IDs ({associated.length})

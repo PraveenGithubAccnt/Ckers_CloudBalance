@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-
-
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchUserProfile",
   async (_, { rejectWithValue }) => {
@@ -19,6 +17,8 @@ const initialState = {
   firstName: null,
   lastName: null,
   role: null,
+  userId: null,
+  arnAccounts: [],
   isAuthenticated: false,
   authLoading: true,
 };
@@ -31,8 +31,14 @@ const authSlice = createSlice({
       state.firstName = null;
       state.lastName = null;
       state.role = null;
+      state.userId = null;
+      state.arnAccounts = [];
       state.isAuthenticated = false;
       state.authLoading = false;
+    },
+    //setArnAccounts goes inside reducers, not extraReducers
+    setArnAccounts: (state, action) => {
+      state.arnAccounts = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -44,7 +50,8 @@ const authSlice = createSlice({
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.firstName = action.payload.firstName;
         state.lastName = action.payload.lastName;
-        state.role = action.payload.role.toLowerCase(); // normalize
+        state.role = action.payload.role.toLowerCase();
+        state.userId = action.payload.userId; //Store userId
         state.isAuthenticated = true;
         state.authLoading = false;
       })
@@ -56,5 +63,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setArnAccounts } = authSlice.actions; // ✅ Fixed: Added comma between logout and setArnAccounts
 export default authSlice.reducer;

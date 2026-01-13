@@ -2,10 +2,10 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { isAuthenticated, role, authLoading } = useSelector(
+  const { isAuthenticated, role, authLoading, userId } = useSelector(
     (state) => state.auth
   );
-console.log({ authLoading, isAuthenticated, role });
+console.log({ authLoading, isAuthenticated, role, userId });
 
   //Wait for profile API
   if (authLoading) return null; 

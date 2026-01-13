@@ -11,7 +11,4 @@ export const getAllArnAccnt = () => {
   return axiosInstance.get("/arnaccounts");
 };
 
-//Get AWS ARN by index 
-export const getAllArnAccntById = (id) => {
-  return axiosInstance.get(`/arnaccounts/${id}`);
-};
+
