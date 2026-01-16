@@ -4,7 +4,7 @@ import com.CloudBalance.CloudBalanceBackend.entity.ArnAccount;
 import com.CloudBalance.CloudBalanceBackend.entity.Role;
 import com.CloudBalance.CloudBalanceBackend.entity.User;
 import com.CloudBalance.CloudBalanceBackend.exception.EmailAlreadyExistsException;
-import com.CloudBalance.CloudBalanceBackend.exception.ResourceNotFoundException; // ✅ NEW IMPORT
+import com.CloudBalance.CloudBalanceBackend.exception.ResourceNotFoundException;
 import com.CloudBalance.CloudBalanceBackend.repository.ArnAccountRepository;
 import com.CloudBalance.CloudBalanceBackend.repository.RoleRepository;
 import com.CloudBalance.CloudBalanceBackend.repository.UserRepository;
@@ -56,7 +56,7 @@ public class UserService {
         }
 
         Role role = roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName)); // ✅ UPDATED
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
 
         user.addRole(role);
 
@@ -76,9 +76,9 @@ public class UserService {
 
     //Update user with optional ARN accounts
     @Transactional
-    public User updateUser(Long id, User userDetails, String roleName, List<Long> arnAccountIds) {
+    public User updateUser(String email, User userDetails, String roleName, List<Long> arnAccountIds) {
 
-        User user = getUserById(id);
+        User user = getUserByEmail(email);
 
         if (userDetails.getFirstName() != null) {
             user.setFirstName(userDetails.getFirstName());
@@ -88,9 +88,6 @@ public class UserService {
             user.setLastName(userDetails.getLastName());
         }
 
-        if (userDetails.getEmail() != null) {
-            user.setEmail(userDetails.getEmail());
-        }
 
         // Encode password if provided
         if (userDetails.getPassword() != null && !userDetails.getPassword().isBlank()) {
@@ -99,7 +96,7 @@ public class UserService {
 
         if (roleName != null) {
             Role role = roleRepository.findByRoleName(roleName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName)); // ✅ UPDATED
+                    .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
             user.addRole(role);
         }
 
@@ -118,11 +115,17 @@ public class UserService {
     }
 
     //UPDATED user
-    public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
+    public void deleteUser(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new ResourceNotFoundException("User not found with email: " +email );
         }
-        userRepository.deleteById(id);
+        else
+        {
+            User user=getUserByEmail(email);
+
+            userRepository.delete(user);
+        }
+
     }
 
     //Helper method to assign ARN accounts to user
@@ -143,7 +146,7 @@ public class UserService {
         return createUser(user, roleName, null);
     }
 
-    public User updateUser(Long id, User userDetails, String roleName) {
-        return updateUser(id, userDetails, roleName, null);
+    public User updateUser(String email, User userDetails, String roleName) {
+        return updateUser(email, userDetails, roleName, null);
     }
 }

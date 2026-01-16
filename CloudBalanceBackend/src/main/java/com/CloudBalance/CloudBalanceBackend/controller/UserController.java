@@ -51,10 +51,10 @@ public class UserController {
 
     // Delete user
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/{email}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String email) {
 
-        userService.deleteUser(id);
+        userService.deleteUser(email);
         return ResponseEntity.noContent().build();
     }
 
@@ -82,9 +82,9 @@ public class UserController {
     }
     // Update user
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{email}")
     public ResponseEntity<UserResponseDTO> updateUser(
-            @PathVariable Long id,
+            @PathVariable String email,
             @RequestBody UserUpdateDTO updateDTO) {
 
         User userDetails = new User();
@@ -99,7 +99,7 @@ public class UserController {
 
         //arnAccountIds
         User updatedUser = userService.updateUser(
-                id,
+                email,
                 userDetails,
                 updateDTO.getRoleName(),
                 updateDTO.getArnAccountIds()

@@ -3,13 +3,12 @@ package com.CloudBalance.CloudBalanceBackend.controller;
 import com.CloudBalance.CloudBalanceBackend.Service.CostExplorerService;
 import com.CloudBalance.CloudBalanceBackend.dto.CostExplorerResponseDTO;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/costexplorer")
@@ -21,32 +20,27 @@ public class CostExplorerController {
         this.costExplorerService = costExplorerService;
     }
 
-    /**
-     * Top-level grouped data (month-wise)
-     * Example: /api/cost-explorer/group?groupByColumn=SERVICE&startDate=2025-01-01&endDate=2025-12-31
-     */
-    @GetMapping("/group")
-    public List<CostExplorerResponseDTO> getGroupedDataByMonth(
-            @RequestParam String groupByColumn,
-            @RequestParam String startMonth,
-            @RequestParam String endMonth
+    // Get distinct values for column
+    @GetMapping("/filteroptions")
+    public Map<String, List<String>> getFilterOptions(
+            @RequestParam(required = false) String column
     ) {
-        return costExplorerService.getMonthlyCostByGroupByMonth(groupByColumn, startMonth.trim(), endMonth.trim());
+        if (column != null && !column.isEmpty()) {
+            // Get distinct values for a specific column
+            return Map.of(column, costExplorerService.getDistinctValuesForColumn(column));
+        } else {
+            // Get distinct values for ALL columns
+            return costExplorerService.getAllFilterOptions();
+        }
     }
 
-
-    /**
-     * Drill-down data for a specific group
-     * Example: /api/cost-explorer/drill?groupByColumn=SERVICE&groupByValue=Amazon EC2&subGroupByColumn=INSTANCE_TYPE&startDate=2025-01-01&endDate=2025-12-31
-     */
-    @GetMapping("/drill")
-    public List<CostExplorerResponseDTO> getDrillDownData(
+    @PostMapping("/getcostdata")
+    public List<CostExplorerResponseDTO> getFilteredData(
             @RequestParam String groupByColumn,
-            @RequestParam String groupByValue,
-            @RequestParam String subGroupByColumn,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+            @RequestParam String startMonth,
+            @RequestParam String endMonth,
+            @RequestBody(required = false) Map<String, List<String>> filters
     ) {
-        return costExplorerService.getMonthlyCostBySubGroup(groupByColumn, groupByValue, subGroupByColumn, startDate, endDate);
+        return costExplorerService.getFilteredMonthlyCost(groupByColumn, startMonth, endMonth, filters);
     }
 }

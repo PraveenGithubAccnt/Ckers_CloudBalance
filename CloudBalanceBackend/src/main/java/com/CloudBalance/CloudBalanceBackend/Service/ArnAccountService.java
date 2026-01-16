@@ -1,5 +1,4 @@
-package com.CloudBalance.CloudBalanceBackend.service;
-
+package com.CloudBalance.CloudBalanceBackend.Service;
 import com.CloudBalance.CloudBalanceBackend.entity.ArnAccount;
 import com.CloudBalance.CloudBalanceBackend.repository.ArnAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +44,5 @@ public class ArnAccountService {
         return arnAccountRepository.save(arnAccount);
     }
 
-    // Update ARN account
-//    public ArnAccount updateArnAccount(Long id, ArnAccount arnAccountDetails) {
-//        ArnAccount arnAccount = arnAccountRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("ARN Account not found with id: " + id));
-//
-//        arnAccount.setArnNumber(arnAccountDetails.getArnNumber());
-//        arnAccount.setAccountId(arnAccountDetails.getAccountId());
-//        arnAccount.setName(arnAccountDetails.getName());
-//
-//        return arnAccountRepository.save(arnAccount);
-//    }
-
-    // Delete ARN account
-//    public void deleteArnAccount(Long id) {
-//        if (!arnAccountRepository.existsById(id)) {
-//            throw new RuntimeException("ARN Account not found with id: " + id);
-//        }
-//        arnAccountRepository.deleteById(id);
-//    }
 
 }

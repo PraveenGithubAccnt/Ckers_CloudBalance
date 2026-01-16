@@ -16,6 +16,6 @@ public class CostExplorerResponseDTO {
 
     private String groupByKey;          // e.g., Amazon EC2
     private String groupByField;        // e.g., SERVICE
-    private Map<String, Long> monthlyCost; // month -> cost mapping
-    private Long totalCost;             // total cost for all months
+    private Map<String, Long> monthlyCost; //cost per month
+    private Long totalCost;             // total cost
 }

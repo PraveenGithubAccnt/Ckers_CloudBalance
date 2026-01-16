@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserResponseDTO {
 
-    private String id;
+
     private String firstName;
     private String lastName;
     private String email;
@@ -24,7 +24,6 @@ public class UserResponseDTO {
     public static UserResponseDTO fromEntity(User user) {
         UserResponseDTO dto = new UserResponseDTO();
 
-        dto.setId(String.valueOf(user.getId()));
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
