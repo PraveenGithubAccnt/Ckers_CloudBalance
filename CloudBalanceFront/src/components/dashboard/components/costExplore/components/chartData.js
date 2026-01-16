@@ -10,13 +10,13 @@ const commonTextColors = {
   toolTipBgColor: "#ffffff",
 };
 
-
+// CHART CONFIG 
 export const chartTypeConfig = {
   bar: {
     type: "mscolumn2d",
     chartSettings: {
-      xaxisname: "Years",
-      yaxisname: "Total number of apps in store",
+      xaxisname: "Month",
+      yaxisname: "Cost",
       theme: "candy",
       bgColor: "#ffffff",
       bgAlpha: "100",
@@ -29,12 +29,9 @@ export const chartTypeConfig = {
   line: {
     type: "msline",
     chartSettings: {
-      yaxisname: "% of Adults on this platform",
-      showhovereffect: "1",
-      numbersuffix: "%",
+      xaxisname: "Month",
+      yaxisname: "Cost",
       drawcrossline: "1",
-      plottooltext:
-        "<b>$dataValue</b> of Adults were on $seriesName",
       theme: "candy",
       bgColor: "#ffffff",
       bgAlpha: "100",
@@ -47,13 +44,9 @@ export const chartTypeConfig = {
   stack: {
     type: "msstackedcolumn2d",
     chartSettings: {
-      xaxisname: "Year",
-      yaxisname: "Sales in M$",
-      numberprefix: "$",
-      numbersuffix: "M",
+      xaxisname: "Month",
+      yaxisname: "Cost",
       showsum: "1",
-      plottooltext:
-        "Revenue from <b>$seriesName</b> in $label was <b>$dataValue</b>",
       theme: "candy",
       bgColor: "#ffffff",
       bgAlpha: "100",
@@ -66,92 +59,98 @@ export const chartTypeConfig = {
 
 
 
-export const apiResponseData = {
-  caption: "App Publishing Trend",
-  subcaption: "2018-2024",
-  categories: [
-    {
-      category: [
-        { label: "2018" },
-        { label: "2019" },
-        { label: "2020" },
-        { label: "2021" },
-        { label: "2022" },
-        { label: "2023" },
-        { label: "2024" }
-      ]
-    }
-  ],
-  dataset: [
-    {
-      seriesname: "Apple App Store",
-      data: [
-        { value: "1962576" },
-        { value: "1798024" },
-        { value: "1961897" },
-        { value: "1903654" },
-        { value: "1642759" },
-        { value: "1725000" },
-        { value: "1850000" }
-      ]
-    },
-    {
-      seriesname: "Google Play Store",
-      data: [
-        { value: "2108450" },
-        { value: "2469894" },
-        { value: "2868084" },
-        { value: "4229856" },
-        { value: "3553050" },
-        { value: "3700000" },
-        { value: "3900000" }
-      ]
-    },
-    {
-      seriesname: "Amazon Appstore",
-      data: [
-        { value: "500000" },
-        { value: "600000" },
-        { value: "700000" },
-        { value: "850000" },
-        { value: "900000" },
-        { value: "950000" },
-        { value: "1000000" }
-      ]
-    }
-  ]
-};
+const MONTH_ORDER = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
 
+// Stack Chart Helper
 const transformToStackedDataset = (flatDataset) => {
   const midpoint = Math.ceil(flatDataset.length / 2);
-  
+
   return [
     {
-      dataset: flatDataset.slice(0, midpoint)
+      dataset: flatDataset.slice(0, midpoint),
     },
     {
-      dataset: flatDataset.slice(midpoint)
-    }
+      dataset: flatDataset.slice(midpoint),
+    },
   ];
 };
 
-// Helper function to build chart data source
+//  API RESPONSE to CHART FORMAT 
+export const transformCostExplorerApiResponse = (apiData) => {
+  if (!apiData || !apiData.length) return null;
+
+  const categories = [];
+  const dataset = [];
+
+  // Collect all unique month-year keys
+  const monthSet = new Set();
+  apiData.forEach(item => {
+    Object.keys(item.monthlyCost || {}).forEach(m => monthSet.add(m));
+  });
+
+  // Sort month-year properly
+  const sortedMonths = Array.from(monthSet).sort((a, b) => {
+    const [y1, m1] = a.split("-");
+    const [y2, m2] = b.split("-");
+    return new Date(`${m1} 1 ${y1}`) - new Date(`${m2} 1 ${y2}`);
+  });
+
+  // Categories (X-axis)
+  sortedMonths.forEach(month => {
+    categories.push({ label: month });
+  });
+
+  // Dataset
+  apiData.forEach(item => {
+    dataset.push({
+      seriesname: item.groupByKey,
+      data: sortedMonths.map(m => ({
+        value: item.monthlyCost?.[m] || 0
+      }))
+    });
+  });
+
+  return {
+    chart: {
+      xAxisName: "Month",
+      yAxisName: "Cost",
+      theme: "candy"
+    },
+    categories: [{ category: categories }],
+    dataset
+  };
+};
+
+
+//BUILD FINAL DATASOURCE 
 export const buildChartDataSource = (chartType, apiData) => {
   const config = chartTypeConfig[chartType] || chartTypeConfig.bar;
-  
-  // Stack chart requires different dataset structure
-  // Transform the flat dataset to nested format
-  const dataset = chartType === 'stack' 
-    ? transformToStackedDataset(apiData.dataset)
-    : apiData.dataset;
-  
+
+  const dataset =
+    chartType === "stack"
+      ? transformToStackedDataset(apiData.dataset)
+      : apiData.dataset;
+
   return {
     chart: {
       caption: apiData.caption,
       subcaption: apiData.subcaption,
-      ...config.chartSettings
+      ...config.chartSettings,
     },
     categories: apiData.categories,
-    dataset: dataset
+    dataset: dataset,
   };
 };

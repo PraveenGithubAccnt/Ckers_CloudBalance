@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { IoMenu } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import cloudbalance from "../../../../../assets/cloudbalance.png";
@@ -6,20 +6,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../../../../redux/slice/sidebarSlice";
 import { setArnAccounts } from "../../../../../redux/slice/authSlice";
 import { getUsersById } from "../../../../../api/userApi";
-
+import { AccountContext } from "../../../../../context/AccountContext";
 
 function LeftNavSection() {
   const dispatch = useDispatch();
-
-  // Get auth data from Redux
+  const { setSelectedAccountId } = useContext(AccountContext);
   const { role, userId, arnAccounts } = useSelector((state) => state.auth);
-
   const [selectedAccount, setSelectedAccount] = useState("");
   const [loading, setLoading] = useState(false);
 
   const isCustomer = role === "customer";
 
-  // Fetch customer ARN accounts when userId is available
+  
   useEffect(() => {
     const fetchUserArnAccounts = async () => {
       setLoading(true);
@@ -27,15 +25,16 @@ function LeftNavSection() {
         const response = await getUsersById(userId);
         const userData = response.data;
 
-        // Store ARN accounts in Redux
         if (userData.arnAccounts && userData.arnAccounts.length > 0) {
           dispatch(setArnAccounts(userData.arnAccounts));
-          // Set first account as default
-          setSelectedAccount(userData.arnAccounts[0].accountId);
+
+          
+          const defaultAccountId = userData.arnAccounts[0].accountId;
+          setSelectedAccount(defaultAccountId);
+          setSelectedAccountId(defaultAccountId); 
         }
       } catch (error) {
         console.error("Error fetching user ARN accounts:", error);
-
       } finally {
         setLoading(false);
       }
@@ -44,28 +43,32 @@ function LeftNavSection() {
     if (isCustomer && userId && arnAccounts.length === 0) {
       fetchUserArnAccounts();
     }
-  }, [isCustomer, userId, arnAccounts.length, dispatch]);
+  }, [isCustomer, userId, arnAccounts.length, dispatch, setSelectedAccountId]);
 
+ 
   const handleAccountChange = (e) => {
     const accountId = e.target.value;
     setSelectedAccount(accountId);
-    
-    console.log("Selected Account ID:", accountId);
-    
+    setSelectedAccountId(accountId); 
 
+    console.log("Selected Account ID:", accountId);
   };
 
   return (
     <div>
       <div className="flex items-center space-x-8">
-        {/* Sidebar toggle */}
+
         <button onClick={() => dispatch(toggleSidebar())}>
           <IoMenu className="w-6 h-6 text-gray-700 cursor-pointer" />
         </button>
 
         {/* Logo */}
         <div className="shrink-0">
-          <img src={cloudbalance} alt="CloudBalance" className="h-20 w-auto" />
+          <img
+            src={cloudbalance}
+            alt="CloudBalance"
+            className="h-20 w-auto"
+          />
         </div>
 
         {/* Dropdown only for customer */}
@@ -77,7 +80,9 @@ function LeftNavSection() {
 
             <div className="relative inline-block">
               {loading ? (
-                <div className="text-gray-500 text-base">Loading accounts...</div>
+                <div className="text-gray-500 text-base">
+                  Loading accounts...
+                </div>
               ) : (
                 <>
                   <select
@@ -96,12 +101,13 @@ function LeftNavSection() {
                         )}
                         {arnAccounts.map((acc, index) => (
                           <option key={index} value={acc.accountId}>
-                            {acc.name} ({acc.accountId})
+                            {acc.name}
                           </option>
                         ))}
                       </>
                     )}
                   </select>
+
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center text-blue-500">
                     <RiArrowDropDownLine size={27} />
                   </div>

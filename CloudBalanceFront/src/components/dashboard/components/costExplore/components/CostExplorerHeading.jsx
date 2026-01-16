@@ -60,15 +60,6 @@ function CostExplorerHeading() {
             How to always be aware of cost changes and history.
           </p>
         </div>
-
-        <div className="w-48">
-          <select className="text-blue-700 w-full px-3 py-2 text-m border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500">
-            <option>Recent Reports</option>
-            <option>Test 1</option>
-            <option>Test 2</option>
-            <option>Test 3</option>
-          </select>
-        </div>
       </div>
     </div>
   );
