@@ -20,7 +20,6 @@ function AddUser() {
 
   //Store associated ARN account IDs
   const [associatedArnIds, setAssociatedArnIds] = useState([]);
-
   const handleChange = (e) => {
     const fieldName = e.target.id;
     const fieldValue = e.target.value;
@@ -50,7 +49,7 @@ function AddUser() {
 
     try {
       if (isEdit && user) {
-        await updateUser(user.id, userData);
+        await updateUser(user.email, userData);
         toast.success("User updated successfully!");
       } else {
         await createUser(userData);
@@ -173,7 +172,6 @@ function AddUser() {
             </div>
           </div>
 
-          {/* Show ManageAccount only when customer role is selected */}
           {formData.userRole === "customer" && (
             <div>
               <ManageAccount

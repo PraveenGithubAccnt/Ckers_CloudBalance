@@ -1,8 +1,15 @@
+import { useState } from "react";
 import CostExplorerHeading from "../../costExplore/components/CostExplorerHeading";
 import ChartSection from "../../costExplore/components/ChartSection";
 import AwsServiceTable from "../../costExplore/components/AwsServiceTable";
 
 function CostExplorer() {
+  // Shared state for filters
+  const [activeGroup, setActiveGroup] = useState("Service");
+  const [startDate, setStartDate] = useState("Jan 2025");
+  const [endDate, setEndDate] = useState("May 2025");
+  const [appliedFilters, setAppliedFilters] = useState({});
+
   return (
     <div className="bg-gray-50 h-full overflow-y-auto">
       <div>
@@ -10,7 +17,16 @@ function CostExplorer() {
       </div>
 
       <div>
-        <ChartSection />
+        <ChartSection
+          activeGroup={activeGroup}
+          onGroupChange={setActiveGroup}
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+          appliedFilters={appliedFilters}
+          onApplyFilters={setAppliedFilters}
+        />
       </div>
 
       <div className="w-full px-6">
@@ -20,9 +36,14 @@ function CostExplorer() {
           </h3>
         </div>
       </div>
-      
+
       <div className="mt-3">
-        <AwsServiceTable />
+        <AwsServiceTable
+          activeGroup={activeGroup}
+          startDate={startDate}
+          endDate={endDate}
+          appliedFilters={appliedFilters}
+        />
       </div>
     </div>
   );

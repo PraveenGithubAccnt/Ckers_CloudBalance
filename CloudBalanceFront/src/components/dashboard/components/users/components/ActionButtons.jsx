@@ -6,7 +6,7 @@ import { IoToggle } from "react-icons/io5";
 function ActionButtons({ onEdit, onDelete, disabled }) {
   return (
     <div className="flex gap-5 items-center">
-      {/* Toggle button */}
+ 
       <button
         disabled={disabled}
         className={`text-xl transition-colors cursor-pointer ${
@@ -19,7 +19,7 @@ function ActionButtons({ onEdit, onDelete, disabled }) {
         {disabled ? <FaToggleOff /> : <IoToggle />}
       </button>
 
-      {/* Edit button */}
+ 
       <button
         onClick={onEdit}
         disabled={disabled}
@@ -31,7 +31,6 @@ function ActionButtons({ onEdit, onDelete, disabled }) {
         <FaEdit />
       </button>
 
-      {/* Delete button */}
       <button
         onClick={onDelete}
         disabled={disabled}

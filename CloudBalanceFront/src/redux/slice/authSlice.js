@@ -51,7 +51,7 @@ const authSlice = createSlice({
         state.firstName = action.payload.firstName;
         state.lastName = action.payload.lastName;
         state.role = action.payload.role.toLowerCase();
-        state.userId = action.payload.userId; //Store userId
+        state.userId = action.payload.userId;
         state.isAuthenticated = true;
         state.authLoading = false;
       })
@@ -63,5 +63,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setArnAccounts } = authSlice.actions; // ✅ Fixed: Added comma between logout and setArnAccounts
+export const { logout, setArnAccounts } = authSlice.actions; 
 export default authSlice.reducer;

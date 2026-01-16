@@ -23,7 +23,7 @@ function ManageAccount({ userArnAccounts = [], onAssociatedChange }) {
     fetchAccounts();
   }, []);
 
-  // PREFILL ASSOCIATED ACCOUNTS (EDIT USER)
+  // PREFILL ASSOCIATED ACCOUNTS 
   useEffect(() => {
     if (!allAccounts.length || !userArnAccounts.length) return;
 
@@ -135,7 +135,6 @@ function ManageAccount({ userArnAccounts = [], onAssociatedChange }) {
 
   return (
     <div className="bg-white rounded-md shadow">
-      {/* Header */}
       <div className="flex items-center gap-4 p-2 border-b border-gray-200">
         <h3 className="text-lg font-semibold">Manage Account Id(s)</h3> |
         <button
@@ -212,7 +211,6 @@ function ManageAccount({ userArnAccounts = [], onAssociatedChange }) {
             </div>
           </div>
 
-          {/* ARROWS */}
           <div className="flex flex-col items-center justify-center gap-4">
             <button
               onClick={addAccounts}
@@ -230,7 +228,7 @@ function ManageAccount({ userArnAccounts = [], onAssociatedChange }) {
             </button>
           </div>
 
-          {/* ASSOCIATED */}
+      
           <div className="border border-gray-200 rounded-md bg-gray-50">
             <div className="p-3 bg-white border-b font-medium">
               Associated Account IDs ({associated.length})

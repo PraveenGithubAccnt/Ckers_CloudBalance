@@ -6,8 +6,8 @@ export const createUser = (userData) => {
 };
 
 // UPDATE user
-export const updateUser = (id, userData) => {
-  return axiosInstance.patch(`/users/${id}`, userData);
+export const updateUser = (email, userData) => {
+  return axiosInstance.patch(`/users/${email}`, userData);
 };
 
 //GET user by id
@@ -21,6 +21,6 @@ export const getAllUsers = () => {
 };
 
 // DELETE user
-export const deleteUser = (id) => {
-  return axiosInstance.delete(`/users/${id}`);
+export const deleteUser = (email) => {
+  return axiosInstance.delete(`/users/${email}`);
 };

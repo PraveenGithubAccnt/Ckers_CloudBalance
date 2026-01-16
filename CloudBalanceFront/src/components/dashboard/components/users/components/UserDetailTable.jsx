@@ -4,16 +4,19 @@ import ActionButtons from "./ActionButtons";
 import { CgSearchLoading } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 function UserDetailTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserEmail, setSelectedUserEmail] = useState(null);
+  // const [user, setUser] = useState(null);
+
   const { role } = useSelector((state) => state.auth);
   const isReadOnly = role === "read only";
   const navigate = useNavigate();
-
+  
   const handleEdit = (user) => {
     if (isReadOnly) return;
     navigate("/dashboard/users/add", { state: { user, isEdit: true } });
@@ -34,22 +37,23 @@ function UserDetailTable() {
     fetchUsers();
   }, []);
 
-  const handleDelete = (userId) => {
+  const handleDelete = (userEmail) => {
     if (isReadOnly) return;
-    setSelectedUserId(userId);
+    setSelectedUserEmail(userEmail);
     setShowConfirm(true);
   };
 
   const confirmDelete = async () => {
     try {
-      await deleteUser(selectedUserId);
-      setUsers((prev) => prev.filter((user) => user.id !== selectedUserId));
+      await deleteUser(selectedUserEmail);
+      setUsers((prev) => prev.filter((user) => user.email !== selectedUserEmail));
+      toast.success(" User Delete successfully!")
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Failed to delete user");
+     toast.error("Faild To Delete User!")
     } finally {
       setShowConfirm(false);
-      setSelectedUserId(null);
+      setSelectedUserEmail(null);
     }
   };
 
@@ -72,7 +76,6 @@ function UserDetailTable() {
           <table className="w-full border-collapse">
             <thead className="sticky top-0 bg-blue-800 z-10">
               <tr className="text-white">
-                <th className="p-3 text-left border-b border-gray-200">ID</th>
                 <th className="p-3 text-left border-b border-gray-200">
                   First Name
                 </th>
@@ -97,7 +100,6 @@ function UserDetailTable() {
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   }`}
                 >
-                  <td className="p-3 border-b border-gray-100">{user.id}</td>
                   <td className="p-3 border-b border-gray-100">
                     {user.firstName}
                   </td>
@@ -116,7 +118,7 @@ function UserDetailTable() {
                     {!isReadOnly && (
                       <ActionButtons
                         onEdit={() => handleEdit(user)}
-                        onDelete={() => handleDelete(user.id)}
+                        onDelete={() => handleDelete(user.email)}
                       />
                     )}
                   </td>

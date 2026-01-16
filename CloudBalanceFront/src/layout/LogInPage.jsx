@@ -26,7 +26,8 @@ function LogInPage() {
 
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("expiresAt",
+        localStorage.setItem(
+          "expiresAt",
           Date.now() + response.data.expiresIn * 1000
         );
 
@@ -44,7 +45,7 @@ function LogInPage() {
       }
     } catch (error) {
       if (error.response) {
-        setError("Invalid email or password");
+        setError(error.response.data?.message || "Invalid email or password");
       } else if (error.request) {
         setError("Cannot connect to server. Please try again.");
       } else {
